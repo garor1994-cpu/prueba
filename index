@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juan & Jara | ¡Nos Casamos!</title>
+    <!-- Fuentes elegantes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #7b8a75; /* Verde oliva suave */
+            --accent-color: #d4af37;  /* Dorado elegante */
+            --bg-color: #fcfbfa;       /* Blanco cálido */
+            --card-bg: #ffffff;
+            --text-dark: #2c302e;
+            --text-muted: #626864;
+            --border-color: #e5e0d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        h1, h2, h3, .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Menú de navegación */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(252, 251, 250, 0.95);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 15px 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Header */
+        header {
+            padding: 100px 20px 80px;
+            background: linear-gradient(rgba(252, 251, 250, 0.85), rgba(252, 251, 250, 0.85)), 
+                        url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1500&q=80') center/cover;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 400;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .event-date {
+            font-size: 1.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        /* Secciones principales */
+        section {
+            padding: 70px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        section:nth-child(even) {
+            background-color: rgba(245, 242, 237, 0.5);
+            border-radius: 12px;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 400;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 1px;
+            background: var(--accent-color);
+            margin: 15px auto 0;
+        }
+
+        /* Tarjetas de Información */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 35px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            margin-top: 25px;
+        }
+
+        .card h3 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .card .time {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        /* Botones */
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: #5d6a58;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        /* Código promocional de hotel */
+        .promo-code {
+            display: inline-block;
+            background: #f0eae1;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-dark);
+            margin: 10px 0;
+        }
+
+        /* Formulario RSVP */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            background-color: #fff;
+        }
+
+        /* Zona de carga de fotos */
+        .upload-box {
+            border: 2px dashed var(--primary-color);
+            padding: 40px 20px;
+            border-radius: 8px;
+            background: #faf8f5;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .upload-box:hover {
+            background: #f2ede4;
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 20px;
+            background-color: #f2ede4;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menú -->
+    <nav>
+        <ul>
+            <li><a href="#details">El gran día</a></li>
+            <li><a href="#accommodation">Viajes & Estancias</a></li>
+            <li><a href="#dresscode">Código de vestimenta</a></li>
+            <li><a href="#rsvp">Confirma tu asistencia</a></li>
+            <li><a href="#upload">Subir una foto</a></li>
+        </ul>
+    </nav>
+
+    <!-- Header / Presentación -->
+    <header>
+        <p class="subtitle">¡Nos vamos a casar!</p>
+        <h1>Juan & Jara</h1>
+        <p class="event-date">14 de abril de 2028</p>
+    </header>
+
+    <!-- Seccion 1: El gran día -->
+    <section id="details">
+        <h2 class="section-title">El Gran Día</h2>
+        <div class="card">
+            <h3>Ceremonia Civil en Mas Les Lloses</h3>
+            <p class="time">12:00 p.m.</p>
+            <p>14 de abril de 2028</p>
+            <p>Carrer Camí de Lliria, 46500 Sagunt, Valencia, España</p>
+            
+            <a href="https://www.google.com/maps/search/?api=1&query=@39.6503879,-0.2945253,19z&query_place_id=ChIJ-xMWO_4_YA0RJTTFI9jmkfQ" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver en Google Maps</a>
+            <a href="#rsvp" class="btn">Confirma tu asistencia</a>
+        </div>
+    </section>
+
+    <!-- Seccion 2: Viajes y Estancias -->
+    <section id="accommodation">
+        <h2 class="section-title">Viajes & Estancias</h2>
+        <div class="card">
+            <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones reservadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
+            <p>Utiliza el código de descuento al hacer tu reserva:</p>
+            <div class="promo-code">CÓDIGO: jajajaja</div>
+            <p><small>Obtendrás un pequeño descuento de grupo de nuestra parte.</small></p>
+        </div>
+    </section>
+
+    <!-- Seccion 3: Código de Vestimenta -->
+    <section id="dresscode">
+        <h2 class="section-title">Código de Vestimenta</h2>
+        <div class="card">
+            <p>¡Vuestra presencia es lo más importante para nosotros!</p>
+            <p>No hay un código de vestimenta estricto, pero vistas como vistas (falda o pantalón), <strong>¡por favor no vengas de blanco para la ocasión!</strong> 😊</p>
+        </div>
+    </section>
+
+    <!-- Seccion 4: RSVP -->
+    <section id="rsvp">
+        <h2 class="section-title">Confirma tu Asistencia</h2>
+        <p>Estamos deseando verte. Por favor, asegúrate de confirmarnos tu asistencia antes del <strong>10 de Julio</strong>.</p>
+        
+        <form class="card" onsubmit="event.preventDefault(); alert('¡Gracias por confirmar tu asistencia!');">
+            <div class="form-group">
+                <label for="name">Nombre y Apellidos:</label>
+                <input type="text" id="name" placeholder="Tu nombre completo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="attendance">¿Nos acompañarás?</label>
+                <select id="attendance" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="yes">¡Sí, ahí estaré!</option>
+                    <option value="no">Lo siento, no podré asistir</option>
+                    <option value="maybe">Aún no estoy seguro/a, te avisaré más adelante</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="diet">¿Tienes alguna restricción dietética? (Vegetariana, pescatariana, alergias, etc.):</label>
+                <textarea id="diet" rows="3" placeholder="Indica aquí si tienes alergias o necesidades especiales"></textarea>
+            </div>
+
+            <button type="submit" class="btn">Enviar Confirmación</button>
+        </form>
+    </section>
+
+    <!-- Seccion 5: Subir Fotos -->
+    <section id="upload">
+        <h2 class="section-title">Subir una Foto</h2>
+        <p>¡Hagamos felices a los novios! Llena el álbum de fotos durante el día de la boda o después.</p>
+        <p>Utiliza nuestro hashtag en redes sociales: <strong>#AllYouNeedIsLove</strong></p>
+        
+        <div class="card">
+            <div class="upload-box" onclick="document.getElementById('fileInput').click();">
+                <p>📷 <strong>Suelta tus fotos aquí, o haz clic para seleccionar archivos.</strong></p>
+                <p><small>El límite es de 30 fotos por envío (máximo 20MB por foto).</small></p>
+                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
+        <p>#AllYouNeedIsLove</p>
+    </footer>
+
+</body>
+</html>
