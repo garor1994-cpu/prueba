@@ -168,11 +168,12 @@
             color: var(--primary-color);
         }
 
-        /* Hero Header */
+        /* Hero Header con imagen personalizable */
         header {
-            padding: 100px 20px 80px;
-            background: linear-gradient(rgba(252, 251, 250, 0.85), rgba(252, 251, 250, 0.85)), 
-                        url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1500&q=80') center/cover;
+            padding: 120px 20px 90px;
+            /* RUTA DE IMAGEN DE CABECERA PERSONALIZABLE: images/cabecera-bg.jpg */
+            background: linear-gradient(rgba(252, 251, 250, 0.82), rgba(252, 251, 250, 0.82)), 
+                        url('images/cabecera-bg.jpg') center/cover no-repeat;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -225,6 +226,17 @@
             height: 1px;
             background: var(--accent-color);
             margin: 15px auto 0;
+        }
+
+        /* Imágenes descriptivas de sección */
+        .section-img {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
         /* Tarjetas de Información */
@@ -301,6 +313,71 @@
             margin: 10px 0;
         }
 
+        /* ---------- ESTILOS PREGUNTAS FRECUENTES (FAQ DESPLEGABLES) ---------- */
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item[open] {
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 20px rgba(123, 138, 117, 0.12);
+        }
+
+        .faq-question {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            list-style: none; /* Elimina la flecha nativa */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question::-webkit-details-marker {
+            display: none; /* Oculta flecha nativa en Chrome/Safari */
+        }
+
+        .faq-question::after {
+            content: '+';
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+            margin-left: 15px;
+            line-height: 1;
+        }
+
+        .faq-item[open] .faq-question::after {
+            content: '−';
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(229, 224, 216, 0.6);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
         /* Formulario RSVP */
         .form-group {
             margin-bottom: 20px;
@@ -360,11 +437,9 @@
     <!-- 1) OVERLAY DEL SOBRE                                    -->
     <!-- ======================================================= -->
     <div id="envelope-overlay">
-        <!-- Imagen estática del sobre cerrado -->
-        <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
-
-        <!-- Vídeo de apertura (se muestra al hacer click) -->
-        <video id="envelope-video" src="apertura-sobre.mp4" playsinline style="display:none;"></video>
+        <!-- RUTA DE IMAGEN Y VIDEO EN REPOSITORIO GITHUB -->
+        <img id="envelope-image" src="images/sobre-cerrado.jpg" alt="Sobre de invitación">
+        <video id="envelope-video" src="images/apertura-sobre.mp4" playsinline style="display:none;"></video>
 
         <div id="tap-hint">Toca el sobre para abrirlo</div>
         <button id="skip-btn">Saltar ▶</button>
@@ -374,12 +449,13 @@
     <!-- 2) CONTENIDO DE LA INVITACIÓN                           -->
     <!-- ======================================================= -->
     <div id="main-content">
-        <!-- Menú -->
+        <!-- Menú de navegación -->
         <nav>
             <ul>
                 <li><a href="#details">El gran día</a></li>
                 <li><a href="#accommodation">Viajes & Estancias</a></li>
                 <li><a href="#dresscode">Código de vestimenta</a></li>
+                <li><a href="#faq">Preguntas frecuentes</a></li>
                 <li><a href="#rsvp">Confirma tu asistencia</a></li>
                 <li><a href="#upload">Subir una foto</a></li>
             </ul>
@@ -396,6 +472,9 @@
         <section id="details">
             <h2 class="section-title">El Gran Día</h2>
             <div class="card">
+                <!-- IMAGEN OPCIONAL DEL LUGAR -->
+                <img src="images/ceremonia.jpg" alt="Lugar de la ceremonia" class="section-img" onerror="this.style.display='none';">
+                
                 <h3>Ceremonia Civil en Mas Les Lloses</h3>
                 <p class="time">12:00 p.m.</p>
                 <p>14 de abril de 2028</p>
@@ -410,6 +489,9 @@
         <section id="accommodation">
             <h2 class="section-title">Viajes & Estancias</h2>
             <div class="card">
+                <!-- IMAGEN OPCIONAL DEL HOTEL -->
+                <img src="images/alojamiento.jpg" alt="Hotel Barceló" class="section-img" onerror="this.style.display='none';">
+                
                 <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones bloqueadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
                 <p>Utiliza el código de descuento al hacer tu reserva:</p>
                 <div class="promo-code">CÓDIGO: jajajaja</div>
@@ -421,12 +503,58 @@
         <section id="dresscode">
             <h2 class="section-title">Código de Vestimenta</h2>
             <div class="card">
+                <!-- IMAGEN OPCIONAL DE DRESSCODE -->
+                <img src="images/dresscode.jpg" alt="Código de vestimenta" class="section-img" onerror="this.style.display='none';">
+                
                 <p>¡Vuestra presencia es lo más importante para nosotros!</p>
                 <p>No hay un código de vestimenta estricto, pero vistas como vistas (falda o pantalón), <strong>¡por favor no vengas de blanco para la ocasión!</strong> 😊</p>
             </div>
         </section>
 
-        <!-- Sección 4: RSVP -->
+        <!-- Sección 4: Preguntas Frecuentes (FAQ Desplegables) -->
+        <section id="faq">
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <p style="color: var(--text-muted);">Aquí resolvemos las dudas más habituales sobre nuestro gran día.</p>
+            
+            <div class="faq-container">
+                <details class="faq-item">
+                    <summary class="faq-question">Lorem ipsum dolor sit amet, consectetur adipiscing elit?</summary>
+                    <div class="faq-answer">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Duis aute irure dolor in reprehenderit in voluptate velit esse?</summary>
+                    <div class="faq-answer">
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Curabitur pretium tincidunt lacus. Nulla gravida orci a odio?</summary>
+                    <div class="faq-answer">
+                        <p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Pellentesque habitant morbi tristique senectus et netus et malesuada?</summary>
+                    <div class="faq-answer">
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut ultrices justo. Phasellus hendrerit eleifend sem, sed sollicitudin odio rhoncus ac.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">Fusce aliquet pede non pede. Suspendisse potenti?</summary>
+                    <div class="faq-answer">
+                        <p>Fusce aliquet pede non pede. Suspendisse potenti. Cras id magna. Ut id nisl quis enim dignissim sagittis. Etiam sollicitudin, ipsum eu pulvinar rutrum, tellus tellus laoreet justo, id ultrices risus justo eu risus.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- Sección 5: RSVP -->
         <section id="rsvp">
             <h2 class="section-title">Confirma tu Asistencia</h2>
             <p>Estamos deseando verte. Por favor, asegúrate de confirmarnos tu asistencia antes del <strong>10 de Julio</strong>.</p>
@@ -456,7 +584,7 @@
             </form>
         </section>
 
-        <!-- Sección 5: Subir Fotos -->
+        <!-- Sección 6: Subir Fotos -->
         <section id="upload">
             <h2 class="section-title">Subir una Foto</h2>
             <p>¡Hagamos felices a los novios! Llena el álbum de fotos durante el día de la boda o después.</p>
