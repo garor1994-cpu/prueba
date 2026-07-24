@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juan & Jara | ¡Nos Casamos!</title>
+
     <!-- Fuentes elegantes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --primary-color: #7b8a75; /* Verde oliva suave */
@@ -36,10 +37,102 @@
             color: var(--text-dark);
             line-height: 1.7;
             text-align: center;
+            overflow-x: hidden;
+        }
+
+        /* Bloquea el scroll mientras el sobre esté activo */
+        body.no-scroll {
+            overflow: hidden;
         }
 
         h1, h2, h3, .nav-logo {
             font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* ---------- OVERLAY DEL SOBRE ---------- */
+        #envelope-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+
+        #envelope-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #envelope-video, #envelope-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        #envelope-image {
+            cursor: pointer;
+            display: block;
+        }
+
+        #skip-btn {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+
+        #skip-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        #tap-hint {
+            position: absolute;
+            bottom: 40px;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            animation: pulse 1.6s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse { 
+            0%, 100% { opacity: .4; transform: scale(0.98); } 
+            50% { opacity: 1; transform: scale(1); } 
+        }
+
+        /* ---------- CONTENIDO DE LA INVITACION ---------- */
+        #main-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.2s ease, transform 1.2s ease;
+        }
+
+        #main-content.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Menú de navegación */
@@ -261,110 +354,191 @@
         }
     </style>
 </head>
-<body>
+<body class="no-scroll">
 
-    <!-- Menú -->
-    <nav>
-        <ul>
-            <li><a href="#details">El gran día</a></li>
-            <li><a href="#accommodation">Viajes & Estancias</a></li>
-            <li><a href="#dresscode">Código de vestimenta</a></li>
-            <li><a href="#rsvp">Confirma tu asistencia</a></li>
-            <li><a href="#upload">Subir una foto</a></li>
-        </ul>
-    </nav>
+    <!-- ======================================================= -->
+    <!-- 1) OVERLAY DEL SOBRE                                    -->
+    <!-- ======================================================= -->
+    <div id="envelope-overlay">
+        <!-- Imagen estática del sobre cerrado -->
+        <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
 
-    <!-- Header / Presentación -->
-    <header>
-        <p class="subtitle">¡Nos vamos a casar!</p>
-        <h1>Juan & Jara</h1>
-        <p class="event-date">14 de abril de 2028</p>
-    </header>
+        <!-- Vídeo de apertura (se muestra al hacer click) -->
+        <video id="envelope-video" src="apertura-sobre.mp4" playsinline style="display:none;"></video>
 
-    <!-- Seccion 1: El gran día -->
-    <section id="details">
-        <h2 class="section-title">El Gran Día</h2>
-        <div class="card">
-            <h3>Ceremonia Civil en Mas Les Lloses</h3>
-            <p class="time">12:00 p.m.</p>
-            <p>14 de abril de 2028</p>
-            <p>Carrer Camí de Lliria, 46500 Sagunt, Valencia, España</p>
+        <div id="tap-hint">Toca el sobre para abrirlo</div>
+        <button id="skip-btn">Saltar ▶</button>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- 2) CONTENIDO DE LA INVITACIÓN                           -->
+    <!-- ======================================================= -->
+    <div id="main-content">
+        <!-- Menú -->
+        <nav>
+            <ul>
+                <li><a href="#details">El gran día</a></li>
+                <li><a href="#accommodation">Viajes & Estancias</a></li>
+                <li><a href="#dresscode">Código de vestimenta</a></li>
+                <li><a href="#rsvp">Confirma tu asistencia</a></li>
+                <li><a href="#upload">Subir una foto</a></li>
+            </ul>
+        </nav>
+
+        <!-- Header / Presentación -->
+        <header>
+            <p class="subtitle">¡Nos vamos a casar!</p>
+            <h1>Juan & Jara</h1>
+            <p class="event-date">14 de abril de 2028</p>
+        </header>
+
+        <!-- Sección 1: El gran día -->
+        <section id="details">
+            <h2 class="section-title">El Gran Día</h2>
+            <div class="card">
+                <h3>Ceremonia Civil en Mas Les Lloses</h3>
+                <p class="time">12:00 p.m.</p>
+                <p>14 de abril de 2028</p>
+                <p>Carrer Camí de Lliria, 46500 Sagunt, Valencia, España</p>
+                
+                <a href="https://www.google.com/maps/search/?api=1&query=@39.6503879,-0.2945253,19z&query_place_id=ChIJ-xMWO_4_YA0RJTTFI9jmkfQ" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver en Google Maps</a>
+                <a href="#rsvp" class="btn">Confirma tu asistencia</a>
+            </div>
+        </section>
+
+        <!-- Sección 2: Viajes y Estancias -->
+        <section id="accommodation">
+            <h2 class="section-title">Viajes & Estancias</h2>
+            <div class="card">
+                <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones reservadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
+                <p>Utiliza el código de descuento al hacer tu reserva:</p>
+                <div class="promo-code">CÓDIGO: jajajaja</div>
+                <p><small>Obtendrás un pequeño descuento de grupo de nuestra parte.</small></p>
+            </div>
+        </section>
+
+        <!-- Sección 3: Código de Vestimenta -->
+        <section id="dresscode">
+            <h2 class="section-title">Código de Vestimenta</h2>
+            <div class="card">
+                <p>¡Vuestra presencia es lo más importante para nosotros!</p>
+                <p>No hay un código de vestimenta estricto, pero vistas como vistas (falda o pantalón), <strong>¡por favor no vengas de blanco para la ocasión!</strong> 😊</p>
+            </div>
+        </section>
+
+        <!-- Sección 4: RSVP -->
+        <section id="rsvp">
+            <h2 class="section-title">Confirma tu Asistencia</h2>
+            <p>Estamos deseando verte. Por favor, asegúrate de confirmarnos tu asistencia antes del <strong>10 de Julio</strong>.</p>
             
-            <a href="https://www.google.com/maps/search/?api=1&query=@39.6503879,-0.2945253,19z&query_place_id=ChIJ-xMWO_4_YA0RJTTFI9jmkfQ" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver en Google Maps</a>
-            <a href="#rsvp" class="btn">Confirma tu asistencia</a>
-        </div>
-    </section>
+            <form class="card" onsubmit="event.preventDefault(); alert('¡Gracias por confirmar tu asistencia!');">
+                <div class="form-group">
+                    <label for="name">Nombre y Apellidos:</label>
+                    <input type="text" id="name" placeholder="Tu nombre completo" required>
+                </div>
 
-    <!-- Seccion 2: Viajes y Estancias -->
-    <section id="accommodation">
-        <h2 class="section-title">Viajes & Estancias</h2>
-        <div class="card">
-            <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones reservadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
-            <p>Utiliza el código de descuento al hacer tu reserva:</p>
-            <div class="promo-code">CÓDIGO: jajajaja</div>
-            <p><small>Obtendrás un pequeño descuento de grupo de nuestra parte.</small></p>
-        </div>
-    </section>
+                <div class="form-group">
+                    <label for="attendance">¿Nos acompañarás?</label>
+                    <select id="attendance" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="yes">¡Sí, ahí estaré!</option>
+                        <option value="no">Lo siento, no podré asistir</option>
+                        <option value="maybe">Aún no estoy seguro/a, te avisaré más adelante</option>
+                    </select>
+                </div>
 
-    <!-- Seccion 3: Código de Vestimenta -->
-    <section id="dresscode">
-        <h2 class="section-title">Código de Vestimenta</h2>
-        <div class="card">
-            <p>¡Vuestra presencia es lo más importante para nosotros!</p>
-            <p>No hay un código de vestimenta estricto, pero vistas como vistas (falda o pantalón), <strong>¡por favor no vengas de blanco para la ocasión!</strong> 😊</p>
-        </div>
-    </section>
+                <div class="form-group">
+                    <label for="diet">¿Tienes alguna restricción dietética? (Vegetariana, pescatariana, alergias, etc.):</label>
+                    <textarea id="diet" rows="3" placeholder="Indica aquí si tienes alergias o necesidades especiales"></textarea>
+                </div>
 
-    <!-- Seccion 4: RSVP -->
-    <section id="rsvp">
-        <h2 class="section-title">Confirma tu Asistencia</h2>
-        <p>Estamos deseando verte. Por favor, asegúrate de confirmarnos tu asistencia antes del <strong>10 de Julio</strong>.</p>
-        
-        <form class="card" onsubmit="event.preventDefault(); alert('¡Gracias por confirmar tu asistencia!');">
-            <div class="form-group">
-                <label for="name">Nombre y Apellidos:</label>
-                <input type="text" id="name" placeholder="Tu nombre completo" required>
+                <button type="submit" class="btn">Enviar Confirmación</button>
+            </form>
+        </section>
+
+        <!-- Sección 5: Subir Fotos -->
+        <section id="upload">
+            <h2 class="section-title">Subir una Foto</h2>
+            <p>¡Hagamos felices a los novios! Llena el álbum de fotos durante el día de la boda o después.</p>
+            <p>Utiliza nuestro hashtag en redes sociales: <strong>#AllYouNeedIsLove</strong></p>
+            
+            <div class="card">
+                <div class="upload-box" onclick="document.getElementById('fileInput').click();">
+                    <p>📷 <strong>Suelta tus fotos aquí, o haz clic para seleccionar archivos.</strong></p>
+                    <p><small>El límite es de 30 fotos por envío (máximo 20MB por foto).</small></p>
+                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                </div>
             </div>
+        </section>
 
-            <div class="form-group">
-                <label for="attendance">¿Nos acompañarás?</label>
-                <select id="attendance" required>
-                    <option value="">Selecciona una opción</option>
-                    <option value="yes">¡Sí, ahí estaré!</option>
-                    <option value="no">Lo siento, no podré asistir</option>
-                    <option value="maybe">Aún no estoy seguro/a, te avisaré más adelante</option>
-                </select>
-            </div>
+        <!-- Footer -->
+        <footer>
+            <p><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
+            <p>#AllYouNeedIsLove</p>
+        </footer>
+    </div>
 
-            <div class="form-group">
-                <label for="diet">¿Tienes alguna restricción dietética? (Vegetariana, pescatariana, alergias, etc.):</label>
-                <textarea id="diet" rows="3" placeholder="Indica aquí si tienes alergias o necesidades especiales"></textarea>
-            </div>
+    <!-- ======================================================= -->
+    <!-- 3) LÓGICA DE INTERACCIÓN (JAVASCRIPT)                   -->
+    <!-- ======================================================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('envelope-overlay');
+            const envelopeImg = document.getElementById('envelope-image');
+            const envelopeVid = document.getElementById('envelope-video');
+            const tapHint = document.getElementById('tap-hint');
+            const skipBtn = document.getElementById('skip-btn');
+            const mainContent = document.getElementById('main-content');
 
-            <button type="submit" class="btn">Enviar Confirmación</button>
-        </form>
-    </section>
+            let isOpening = false;
 
-    <!-- Seccion 5: Subir Fotos -->
-    <section id="upload">
-        <h2 class="section-title">Subir una Foto</h2>
-        <p>¡Hagamos felices a los novios! Llena el álbum de fotos durante el día de la boda o después.</p>
-        <p>Utiliza nuestro hashtag en redes sociales: <strong>#AllYouNeedIsLove</strong></p>
-        
-        <div class="card">
-            <div class="upload-box" onclick="document.getElementById('fileInput').click();">
-                <p>📷 <strong>Suelta tus fotos aquí, o haz clic para seleccionar archivos.</strong></p>
-                <p><small>El límite es de 30 fotos por envío (máximo 20MB por foto).</small></p>
-                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
-            </div>
-        </div>
-    </section>
+            // Función para difuminar el sobre y mostrar la invitación
+            function openInvitation() {
+                // Difuminar overlay
+                overlay.classList.add('hidden');
+                
+                // Reactivar el scroll en la página
+                document.body.classList.remove('no-scroll');
 
-    <!-- Footer -->
-    <footer>
-        <p><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
-        <p>#AllYouNeedIsLove</p>
-    </footer>
+                // Revelar suavemente el contenido de la invitación
+                mainContent.classList.add('show');
+            }
+
+            // Iniciar la reproducción del vídeo
+            function startOpening() {
+                if (isOpening) return;
+                isOpening = true;
+
+                // Ocultar imagen estática y texto de aviso
+                envelopeImg.style.display = 'none';
+                tapHint.style.display = 'none';
+
+                // Mostrar y reproducir el vídeo
+                envelopeVid.style.display = 'block';
+                
+                const playPromise = envelopeVid.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("No se pudo autoreproducir el vídeo, mostrando la invitación:", error);
+                        openInvitation();
+                    });
+                }
+            }
+
+            // Eventos de clic/tap en la imagen del sobre
+            envelopeImg.addEventListener('click', startOpening);
+
+            // Al finalizar el vídeo, difuminar sobre y mostrar web
+            envelopeVid.addEventListener('ended', openInvitation);
+
+            // Botón de saltar
+            skipBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                envelopeVid.pause();
+                openInvitation();
+            });
+        });
+    </script>
 
 </body>
 </html>
