@@ -765,7 +765,6 @@
 
     <div id="envelope-overlay">
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
-        <!-- AÑADIDOS ATRIBUTOS playsinline Y webkit-playsinline PARA MÓVILES -->
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline webkit-playsinline muted preload="auto" style="display:none;"></video>
 
         <div id="envelope-tap-area" role="button" aria-label="Abrir invitación"></div>
@@ -968,15 +967,7 @@
 
             function addTapListener(el, handler) {
                 if (!el) return;
-                let touched = false;
-                el.addEventListener('touchend', (e) => {
-                    touched = true;
-                    e.preventDefault();
-                    handler(e);
-                    setTimeout(() => { touched = false; }, 500);
-                }, { passive: false });
                 el.addEventListener('click', (e) => {
-                    if (touched) return;
                     handler(e);
                 });
             }
@@ -1024,7 +1015,6 @@
 
             let isOpening = false;
 
-            // --- REPRODUCCIÓN FORZADA DE MÚSICA EN MÓVILES ---
             function playAudio() {
                 if (bgMusic) {
                     bgMusic.muted = false;
@@ -1067,7 +1057,7 @@
                 if (isOpening) return;
                 isOpening = true;
 
-                // 1. REPRODUCIR AUDIO INMEDIATAMENTE TRAS LA PULSACIÓN TÁCTIL
+                // 1. REPRODUCCIÓN SÍNCRONA DE AUDIO AL INSTANTE DE TOCAR
                 playAudio();
 
                 if (envelopeImg) envelopeImg.style.display = 'none';
@@ -1075,15 +1065,15 @@
                 if (tapArea) tapArea.style.display = 'none';
 
                 if (envelopeVid) {
+                    // SILENCIADO DE SISTEMA PARA QUE EL MÓVIL NO PAUSE LA MÚSICA
+                    envelopeVid.muted = true;
+                    envelopeVid.defaultMuted = true;
                     envelopeVid.style.display = 'block';
 
                     envelopeVid.addEventListener('error', () => {
                         openInvitation();
                     }, { once: true });
 
-                    // Garantizar que el vídeo no roba el silencio
-                    envelopeVid.muted = true;
-                    
                     const playPromise = envelopeVid.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(error => {
