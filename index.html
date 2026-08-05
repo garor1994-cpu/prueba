@@ -171,18 +171,19 @@
             transform: translateY(20px);
             transition: opacity 1.2s ease, transform 1.2s ease;
 
+            /* Difuminado superior e inferior más amplio (ampliado al 16%) */
             -webkit-mask-image: linear-gradient(
                 to bottom,
                 transparent 0%,
-                black 8%,
-                black 92%,
+                black 16%,
+                black 84%,
                 transparent 100%
             );
             mask-image: linear-gradient(
                 to bottom,
                 transparent 0%,
-                black 8%,
-                black 92%,
+                black 16%,
+                black 84%,
                 transparent 100%
             );
         }
@@ -244,6 +245,32 @@
             margin: 0 auto;
             position: relative;
             overflow: hidden;
+        }
+
+        /* --- DIFUMINADO ENTRE SECCIONES --- */
+        section {
+            position: relative;
+        }
+
+        section::before,
+        section::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 70px;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        section::before {
+            top: 0;
+            background: linear-gradient(to bottom, var(--bg-color), transparent);
+        }
+
+        section::after {
+            bottom: 0;
+            background: linear-gradient(to top, var(--bg-color), transparent);
         }
 
         header {
@@ -354,6 +381,17 @@
             background: var(--bg-color);
         }
 
+        .countdown-decor-img {
+            width: 70px;
+            height: auto;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 10px auto;
+            position: relative;
+            z-index: 5;
+        }
+
         .countdown-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -396,6 +434,7 @@
             color: var(--primary-color);
             margin-bottom: 15px;
             position: relative;
+            z-index: 5;
         }
 
         .section-title::after {
@@ -427,7 +466,7 @@
             max-height: calc(100vh - 180px);
             overflow-y: auto;
             position: relative;
-            z-index: 2;
+            z-index: 5;
         }
 
         .card h3 {
@@ -494,6 +533,8 @@
             overflow-y: auto;
             text-align: left;
             padding-right: 5px;
+            position: relative;
+            z-index: 5;
         }
 
         .faq-item {
@@ -577,6 +618,19 @@
             background-color: #f2ede4;
             color: var(--text-muted);
             font-size: 0.85rem;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(to bottom, var(--bg-color), transparent);
+            pointer-events: none;
+            z-index: 4;
         }
     </style>
 </head>
@@ -646,7 +700,11 @@
 
         <!-- SECCIÓN DE CUENTA ATRÁS -->
         <section id="countdown">
+            <!-- Imagen pequeña superior -->
+            <img src="images/decoracion-arriba.png" alt="Detalle decorativo" class="countdown-decor-img" onerror="this.style.display='none';">
+
             <h2 class="section-title">Cuenta Atrás</h2>
+
             <div class="card">
                 <h3>¡Ya falta menos!</h3>
                 <p>Estamos contando cada segundo para celebrar con vosotros.</p>
@@ -670,6 +728,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Imagen pequeña inferior -->
+            <img src="images/decoracion-abajo.png" alt="Detalle decorativo" class="countdown-decor-img" onerror="this.style.display='none';">
         </section>
 
         <section id="accommodation">
@@ -696,7 +757,7 @@
 
         <section id="faq">
             <h2 class="section-title">Preguntas Frecuentes</h2>
-            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem;">Dudas habituales sobre nuestro gran día.</p>
+            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem; position: relative; z-index: 5;">Dudas habituales sobre nuestro gran día.</p>
             
             <div class="faq-container">
                 <details class="faq-item">
@@ -731,7 +792,7 @@
 
         <section id="rsvp">
             <h2 class="section-title">Confirma tu Asistencia</h2>
-            <p style="margin-bottom: 10px; font-size: 0.85rem;">Confírmanos antes del <strong>10 de Julio</strong>.</p>
+            <p style="margin-bottom: 10px; font-size: 0.85rem; position: relative; z-index: 5;">Confírmanos antes del <strong>10 de Julio</strong>.</p>
             
             <form class="card" onsubmit="event.preventDefault(); alert('¡Gracias por confirmar tu asistencia!');">
                 <div class="form-group">
@@ -760,7 +821,7 @@
 
         <section id="upload">
             <h2 class="section-title">Subir una Foto</h2>
-            <p style="margin-bottom: 10px; font-size: 0.85rem;">Hashtag: <strong>#AllYouNeedIsLove</strong></p>
+            <p style="margin-bottom: 10px; font-size: 0.85rem; position: relative; z-index: 5;">Hashtag: <strong>#AllYouNeedIsLove</strong></p>
             
             <div class="card">
                 <div class="upload-box" onclick="document.getElementById('fileInput').click();">
@@ -772,8 +833,8 @@
         </section>
 
         <footer>
-            <p><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
-            <p>#AllYouNeedIsLove</p>
+            <p style="position: relative; z-index: 5;"><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
+            <p style="position: relative; z-index: 5;">#AllYouNeedIsLove</p>
         </footer>
     </div>
 
