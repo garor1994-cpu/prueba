@@ -134,31 +134,169 @@
             50% { opacity: 1; transform: scale(1); } 
         }
 
+        /* --- BOTÓN DE MÚSICA ADAPTATIVO --- */
         #music-control {
             position: fixed;
             bottom: 20px;
             left: 20px;
             z-index: 2000;
-            width: 44px;
             height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 0 16px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.92);
             border: 1px solid var(--border-color);
             color: var(--primary-color);
-            font-size: 18px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Montserrat', sans-serif;
             cursor: pointer;
             display: flex;
             align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backdrop-filter: blur(6px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        #music-control:hover {
+            transform: scale(1.04);
+            background: #ffffff;
+        }
+
+        #music-control .music-icon {
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        #music-control .music-text {
+            max-width: 150px;
+            opacity: 1;
+            transition: max-width 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Estado contraído al scrollear */
+        #music-control.scrolled {
+            padding: 0;
+            width: 44px;
             justify-content: center;
+            border-radius: 50%;
+        }
+
+        #music-control.scrolled .music-text {
+            max-width: 0;
+            opacity: 0;
+            margin: 0;
+        }
+
+        /* --- MENÚ DESPLEGABLE (3 RAYAS) --- */
+        #menu-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        #menu-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #menu-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             backdrop-filter: blur(6px);
             transition: transform 0.2s ease, background 0.3s ease;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        #music-control:hover {
-            transform: scale(1.08);
+        #menu-toggle:hover {
+            transform: scale(1.06);
             background: #ffffff;
+        }
+
+        #menu-toggle .bar {
+            width: 20px;
+            height: 2px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Transformación a cruz al abrir */
+        #menu-toggle.active .bar:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        #menu-toggle.active .bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        #menu-toggle.active .bar:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        #dropdown-menu {
+            position: absolute;
+            top: 52px;
+            right: 0;
+            background: rgba(252, 251, 250, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 10px 0;
+            width: 230px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        #dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        #dropdown-menu ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #dropdown-menu a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.78rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: right;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        #dropdown-menu a:hover {
+            background: rgba(123, 138, 117, 0.1);
+            color: var(--primary-color);
         }
 
         #main-content {
@@ -171,7 +309,6 @@
             transform: translateY(20px);
             transition: opacity 1.2s ease, transform 1.2s ease;
 
-            /* Difuminado superior e inferior más amplio (ampliado al 16%) */
             -webkit-mask-image: linear-gradient(
                 to bottom,
                 transparent 0%,
@@ -193,46 +330,6 @@
             transform: translateY(0);
         }
 
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(252, 251, 250, 0.9);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 1000;
-            padding: 10px 15px;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding-bottom: 2px;
-        }
-
-        nav ul::-webkit-scrollbar {
-            display: none;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: var(--primary-color);
-        }
-
         header, section, footer {
             min-height: 100vh;
             min-height: 100dvh;
@@ -247,7 +344,6 @@
             overflow: hidden;
         }
 
-        /* --- DIFUMINADO ENTRE SECCIONES --- */
         section {
             position: relative;
         }
@@ -376,7 +472,6 @@
             -webkit-backdrop-filter: blur(2px);
         }
 
-        /* --- ESTILOS DE LA CUENTA ATRÁS --- */
         #countdown {
             background: var(--bg-color);
         }
@@ -640,7 +735,32 @@
         <source src="cancion.mp3" type="audio/mpeg">
     </audio>
 
-    <button id="music-control" aria-label="Silenciar / Activar música" title="Música">🔊</button>
+    <!-- BOTÓN DE MÚSICA -->
+    <button id="music-control" aria-label="Silenciar / Activar música" title="Música">
+        <span class="music-icon" id="music-icon">🔊</span>
+        <span class="music-text" id="music-text">Silenciar música</span>
+    </button>
+
+    <!-- MENÚ DESPLEGABLE (3 RAYAS) -->
+    <div id="menu-container">
+        <button id="menu-toggle" aria-label="Abrir menú">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        <div id="dropdown-menu">
+            <ul>
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#details">El gran día</a></li>
+                <li><a href="#countdown">Cuenta atrás</a></li>
+                <li><a href="#accommodation">Viajes & Estancias</a></li>
+                <li><a href="#dresscode">Código de vestimenta</a></li>
+                <li><a href="#faq">Preguntas frecuentes</a></li>
+                <li><a href="#rsvp">Confirma tu asistencia</a></li>
+                <li><a href="#upload">Subir una foto</a></li>
+            </ul>
+        </div>
+    </div>
 
     <div id="envelope-overlay">
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
@@ -653,19 +773,6 @@
     </div>
 
     <div id="main-content">
-        <nav>
-            <ul>
-                <li><a href="#hero">Inicio</a></li>
-                <li><a href="#details">El gran día</a></li>
-                <li><a href="#countdown">Cuenta atrás</a></li>
-                <li><a href="#accommodation">Viajes & Estancias</a></li>
-                <li><a href="#dresscode">Código de vestimenta</a></li>
-                <li><a href="#faq">Preguntas frecuentes</a></li>
-                <li><a href="#rsvp">Confirma tu asistencia</a></li>
-                <li><a href="#upload">Subir una foto</a></li>
-            </ul>
-        </nav>
-
         <header id="hero">
             <video class="header-video-bg" autoplay loop muted playsinline preload="auto" poster="images/cabecera-bg.jpg">
                 <source src="video-cabecera.mp4" type="video/mp4">
@@ -700,7 +807,6 @@
 
         <!-- SECCIÓN DE CUENTA ATRÁS -->
         <section id="countdown">
-            <!-- Imagen pequeña superior -->
             <img src="images/decoracion-arriba.png" alt="Detalle decorativo" class="countdown-decor-img" onerror="this.style.display='none';">
 
             <h2 class="section-title">Cuenta Atrás</h2>
@@ -729,7 +835,6 @@
                 </div>
             </div>
 
-            <!-- Imagen pequeña inferior -->
             <img src="images/decoracion-abajo.png" alt="Detalle decorativo" class="countdown-decor-img" onerror="this.style.display='none';">
         </section>
 
@@ -851,6 +956,12 @@
             
             const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-control');
+            const musicIcon = document.getElementById('music-icon');
+            const musicText = document.getElementById('music-text');
+
+            const menuContainer = document.getElementById('menu-container');
+            const menuToggle = document.getElementById('menu-toggle');
+            const dropdownMenu = document.getElementById('dropdown-menu');
 
             const headerVid = document.querySelector('.header-video-bg');
 
@@ -869,19 +980,42 @@
                 });
             }
 
+            // --- LÓGICA DEL MENÚ DESPLEGABLE ---
+            addTapListener(menuToggle, (e) => {
+                e.stopPropagation();
+                menuToggle.classList.toggle('active');
+                dropdownMenu.classList.toggle('active');
+            });
+
+            // Cierra el menú al hacer clic en un enlace
+            dropdownMenu.querySelectorAll('a').forEach(link => {
+                addTapListener(link, () => {
+                    menuToggle.classList.remove('active');
+                    dropdownMenu.classList.remove('active');
+                });
+            });
+
+            // Cierra el menú al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (menuContainer && !menuContainer.contains(e.target)) {
+                    menuToggle.classList.remove('active');
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+
             function attemptHeaderVideoPlay() {
                 if (!headerVid) return;
                 const playPromise = headerVid.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(err => {
-                        console.log("Autoplay del vídeo de cabecera bloqueado, se reintentará tras la interacción del usuario:", err);
+                        console.log("Autoplay del vídeo de cabecera bloqueado:", err);
                     });
                 }
             }
 
             if (headerVid) {
                 headerVid.addEventListener('error', () => {
-                    console.log("El vídeo de cabecera no se pudo cargar. Revisa la ruta/formato de 'video-cabecera.mp4'.");
+                    console.log("El vídeo de cabecera no se pudo cargar.");
                     headerVid.style.display = 'none';
                 });
                 attemptHeaderVideoPlay();
@@ -892,7 +1026,8 @@
             function playAudio() {
                 if (bgMusic.paused) {
                     bgMusic.play().then(() => {
-                        musicBtn.textContent = '🔊';
+                        musicIcon.textContent = '🔊';
+                        musicText.textContent = 'Silenciar música';
                     }).catch(error => {
                         console.log("Error al reproducir audio:", error);
                     });
@@ -902,10 +1037,12 @@
             function toggleAudio() {
                 if (bgMusic.paused) {
                     bgMusic.play();
-                    musicBtn.textContent = '🔊';
+                    musicIcon.textContent = '🔊';
+                    musicText.textContent = 'Silenciar música';
                 } else {
                     bgMusic.pause();
-                    musicBtn.textContent = '🔇';
+                    musicIcon.textContent = '🔇';
+                    musicText.textContent = 'Activar música';
                 }
             }
 
@@ -931,21 +1068,19 @@
                 envelopeVid.style.display = 'block';
 
                 envelopeVid.addEventListener('error', () => {
-                    console.log("No se pudo cargar el vídeo de apertura, mostrando la invitación directamente.");
                     openInvitation();
                 }, { once: true });
 
                 const playPromise = envelopeVid.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        console.log("No se pudo autoreproducir el vídeo, mostrando la invitación:", error);
                         openInvitation();
                     });
                 }
             }
 
             addTapListener(envelopeImg, startOpening);
-            addTapListener(tapArea, startOpening);
+            addTapListener(envelopeTapArea, startOpening);
 
             envelopeVid.addEventListener('ended', openInvitation);
 
@@ -955,18 +1090,34 @@
                 openInvitation();
             });
 
-            setTimeout(() => {
-                if (!overlay.classList.contains('hidden') && !isOpening) {
-                    console.log('Comprobación de seguridad: el overlay sigue activo, los controles deberían estar operativos.');
-                }
-            }, 8000);
-
-            if (mainContent && scrollIndicator) {
+            // --- LÓGICA DE SCROLL (Música, Menú e Indicador) ---
+            if (mainContent) {
                 mainContent.addEventListener('scroll', () => {
-                    if (mainContent.scrollTop > 40) {
-                        scrollIndicator.classList.add('fade-out');
+                    const scrollPos = mainContent.scrollTop;
+
+                    // 1. Mostrar/Ocultar Menú (solo visible en la primera sección)
+                    if (scrollPos > 120) {
+                        menuContainer.classList.add('hidden');
+                        menuToggle.classList.remove('active');
+                        dropdownMenu.classList.remove('active');
                     } else {
-                        scrollIndicator.classList.remove('fade-out');
+                        menuContainer.classList.remove('hidden');
+                    }
+
+                    // 2. Contraer/Expandir Botón de Música
+                    if (scrollPos > 40) {
+                        musicBtn.classList.add('scrolled');
+                    } else {
+                        musicBtn.classList.remove('scrolled');
+                    }
+
+                    // 3. Indicador de scroll
+                    if (scrollIndicator) {
+                        if (scrollPos > 40) {
+                            scrollIndicator.classList.add('fade-out');
+                        } else {
+                            scrollIndicator.classList.remove('fade-out');
+                        }
                     }
                 });
             }
@@ -1001,6 +1152,5 @@
             setInterval(updateCountdown, 1000);
         });
     </script>
-
 </body>
 </html>
