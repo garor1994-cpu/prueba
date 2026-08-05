@@ -12,9 +12,9 @@
 
     <style>
         :root {
-            --primary-color: #7b8a75; /* Verde oliva suave */
-            --accent-color: #d4af37;  /* Dorado elegante */
-            --bg-color: #fcfbfa;       /* Blanco cálido */
+            --primary-color: #7b8a75;
+            --accent-color: #d4af37;
+            --bg-color: #fcfbfa;
             --card-bg: #ffffff;
             --text-dark: #2c302e;
             --text-muted: #626864;
@@ -45,7 +45,6 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
-        /* ---------- OVERLAY DEL SOBRE ---------- */
         #envelope-overlay {
             position: fixed;
             top: 0;
@@ -119,7 +118,6 @@
             50% { opacity: 1; transform: scale(1); } 
         }
 
-        /* ---------- BOTÓN DE MÚSICA FLOTANTE ---------- */
         #music-control {
             position: fixed;
             bottom: 20px;
@@ -146,12 +144,11 @@
             background: #ffffff;
         }
 
-        /* ---------- CONTENEDOR PRINCIPAL ---------- */
         #main-content {
             height: 100vh;
             height: 100dvh;
             overflow-y: scroll;
-            scroll-snap-type: y mandatory;
+            scroll-snap-type: none;
             scroll-behavior: smooth;
             opacity: 0;
             transform: translateY(20px);
@@ -178,7 +175,6 @@
             transform: translateY(0);
         }
 
-        /* Menú de navegación flotante */
         nav {
             position: fixed;
             top: 0;
@@ -219,12 +215,9 @@
             color: var(--primary-color);
         }
 
-        /* ---------- SECCIONES PANTALLA COMPLETA ---------- */
         header, section, footer {
             min-height: 100vh;
             min-height: 100dvh;
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -236,7 +229,6 @@
             overflow: hidden;
         }
 
-        /* ---------- 1. HEADER CON VÍDEO DE FONDO ---------- */
         header {
             position: relative;
             background: #000;
@@ -258,7 +250,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Filtro de difuminado sobre el vídeo y capa translúcida */
             background: rgba(252, 251, 250, 0.45);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -295,7 +286,41 @@
             font-weight: 600;
         }
 
-        /* ---------- 2. SECCIÓN CEREMONIA CON IMAGEN DE FONDO COMPLETA ---------- */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-dark);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            opacity: 0.85;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .scroll-indicator.fade-out {
+            opacity: 0;
+        }
+
+        .scroll-indicator svg {
+            width: 22px;
+            height: 22px;
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(8px); opacity: 1; }
+        }
+
         #details {
             background: linear-gradient(rgba(252, 251, 250, 0.82), rgba(252, 251, 250, 0.82)), 
                         url('images/ceremonia.jpg') center/cover no-repeat;
@@ -332,7 +357,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Tarjetas adaptadas */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -401,7 +425,6 @@
             font-size: 0.85rem;
         }
 
-        /* FAQ Desplegables */
         .faq-container {
             display: flex;
             flex-direction: column;
@@ -458,7 +481,6 @@
             line-height: 1.5;
         }
 
-        /* Formularios */
         .form-group {
             margin-bottom: 12px;
             text-align: left;
@@ -501,27 +523,21 @@
 </head>
 <body class="no-scroll">
 
-    <!-- AUDIO DE FONDO -->
     <audio id="bg-music" loop preload="auto">
         <source src="cancion.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- BOTÓN DE MÚSICA -->
     <button id="music-control" aria-label="Silenciar / Activar música" title="Música">🔊</button>
 
-    <!-- OVERLAY DEL SOBRE -->
     <div id="envelope-overlay">
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
-        <!-- Vídeo con atributo muted -->
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline muted style="display:none;"></video>
 
         <div id="tap-hint">Toca el sobre para abrirlo</div>
         <button id="skip-btn">Saltar ▶</button>
     </div>
 
-    <!-- CONTENIDO DE LA INVITACIÓN -->
     <div id="main-content">
-        <!-- Menú de navegación -->
         <nav>
             <ul>
                 <li><a href="#hero">Inicio</a></li>
@@ -534,10 +550,10 @@
             </ul>
         </nav>
 
-        <!-- Header / Presentación con Vídeo de Fondo -->
         <header id="hero">
-            <video class="header-video-bg" autoplay loop muted playsinline poster="images/cabecera-bg.jpg">
+            <video class="header-video-bg" autoplay loop muted playsinline preload="auto" poster="images/cabecera-bg.jpg">
                 <source src="video-cabecera.mp4" type="video/mp4">
+                <source src="video-cabecera.webm" type="video/webm">
             </video>
             <div class="header-overlay"></div>
             <div class="header-content">
@@ -545,9 +561,14 @@
                 <h1>Juan & Jara</h1>
                 <p class="event-date">14 de abril de 2028</p>
             </div>
+            <div class="scroll-indicator" id="scroll-indicator">
+                <span>Desliza para continuar</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </div>
         </header>
 
-        <!-- Sección 1: El gran día -->
         <section id="details">
             <h2 class="section-title">El Gran Día</h2>
             <div class="card">
@@ -561,7 +582,6 @@
             </div>
         </section>
 
-        <!-- Sección 2: Viajes y Estancias -->
         <section id="accommodation">
             <h2 class="section-title">Viajes & Estancias</h2>
             <div class="card">
@@ -574,7 +594,6 @@
             </div>
         </section>
 
-        <!-- Sección 3: Código de Vestimenta -->
         <section id="dresscode">
             <h2 class="section-title">Código de Vestimenta</h2>
             <div class="card">
@@ -585,7 +604,6 @@
             </div>
         </section>
 
-        <!-- Sección 4: Preguntas Frecuentes -->
         <section id="faq">
             <h2 class="section-title">Preguntas Frecuentes</h2>
             <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem;">Dudas habituales sobre nuestro gran día.</p>
@@ -621,7 +639,6 @@
             </div>
         </section>
 
-        <!-- Sección 5: RSVP -->
         <section id="rsvp">
             <h2 class="section-title">Confirma tu Asistencia</h2>
             <p style="margin-bottom: 10px; font-size: 0.85rem;">Confírmanos antes del <strong>10 de Julio</strong>.</p>
@@ -651,7 +668,6 @@
             </form>
         </section>
 
-        <!-- Sección 6: Subir Fotos -->
         <section id="upload">
             <h2 class="section-title">Subir una Foto</h2>
             <p style="margin-bottom: 10px; font-size: 0.85rem;">Hashtag: <strong>#AllYouNeedIsLove</strong></p>
@@ -665,14 +681,12 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer>
             <p><strong>Juan & Jara</strong> • 14 de abril de 2028</p>
             <p>#AllYouNeedIsLove</p>
         </footer>
     </div>
 
-    <!-- JAVASCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('envelope-overlay');
@@ -681,15 +695,29 @@
             const tapHint = document.getElementById('tap-hint');
             const skipBtn = document.getElementById('skip-btn');
             const mainContent = document.getElementById('main-content');
+            const scrollIndicator = document.getElementById('scroll-indicator');
             
-            // Elementos de Audio
             const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-control');
 
-            // Forzar reproducción del vídeo de la cabecera
             const headerVid = document.querySelector('.header-video-bg');
+
+            function attemptHeaderVideoPlay() {
+                if (!headerVid) return;
+                const playPromise = headerVid.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.log("Autoplay del vídeo de cabecera bloqueado, se reintentará tras la interacción del usuario:", err);
+                    });
+                }
+            }
+
             if (headerVid) {
-                headerVid.play().catch(err => console.log("Autoplay del vídeo de cabecera bloqueado o diferido:", err));
+                headerVid.addEventListener('error', () => {
+                    console.log("El vídeo de cabecera no se pudo cargar. Revisa la ruta/formato de 'video-cabecera.mp4'.");
+                    headerVid.style.display = 'none';
+                });
+                attemptHeaderVideoPlay();
             }
 
             let isOpening = false;
@@ -721,13 +749,14 @@
                 document.body.classList.remove('no-scroll');
                 mainContent.classList.add('show');
                 playAudio();
+                attemptHeaderVideoPlay();
             }
 
             function startOpening() {
                 if (isOpening) return;
                 isOpening = true;
 
-                playAudio(); // Inicia la música tras la interacción inicial del usuario
+                playAudio();
 
                 envelopeImg.style.display = 'none';
                 tapHint.style.display = 'none';
@@ -750,6 +779,16 @@
                 envelopeVid.pause();
                 openInvitation();
             });
+
+            if (mainContent && scrollIndicator) {
+                mainContent.addEventListener('scroll', () => {
+                    if (mainContent.scrollTop > 40) {
+                        scrollIndicator.classList.add('fade-out');
+                    } else {
+                        scrollIndicator.classList.remove('fade-out');
+                    }
+                });
+            }
         });
     </script>
 
