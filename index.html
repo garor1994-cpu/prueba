@@ -27,20 +27,16 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
+        html, body {
+            height: 100%;
             background-color: var(--bg-color);
             color: var(--text-dark);
-            line-height: 1.7;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
             text-align: center;
-            overflow-x: hidden;
+            overflow: hidden; /* Evita doble barra de scroll */
         }
 
-        /* Bloquea el scroll mientras el sobre esté activo */
         body.no-scroll {
             overflow: hidden;
         }
@@ -123,11 +119,32 @@
             50% { opacity: 1; transform: scale(1); } 
         }
 
-        /* ---------- CONTENIDO DE LA INVITACION ---------- */
+        /* ---------- CONTENDEDOR PRINCIPAL CON SCROLL SNAP Y DIFUMINADO ---------- */
         #main-content {
+            height: 100vh;
+            height: 100dvh; /* Soporte para navegadores móviles con barra dinámica */
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1.2s ease, transform 1.2s ease;
+
+            /* Máscara de gradiente para difuminar arriba y abajo al scrollear */
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 8%,
+                black 92%,
+                transparent 100%
+            );
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 8%,
+                black 92%,
+                transparent 100%
+            );
         }
 
         #main-content.show {
@@ -135,29 +152,37 @@
             transform: translateY(0);
         }
 
-        /* Menú de navegación */
+        /* Menú de navegación flotante */
         nav {
-            position: sticky;
+            position: fixed;
             top: 0;
-            background: rgba(252, 251, 250, 0.95);
-            backdrop-filter: blur(5px);
+            left: 0;
+            right: 0;
+            background: rgba(252, 251, 250, 0.9);
+            backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
-            padding: 15px 20px;
+            padding: 10px 15px;
         }
 
         nav ul {
             list-style: none;
             display: flex;
             justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
+            gap: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 2px;
+        }
+
+        nav ul::-webkit-scrollbar {
+            display: none; /* Oculta scrollbar del nav en móvil */
         }
 
         nav a {
             text-decoration: none;
             color: var(--text-dark);
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -168,17 +193,30 @@
             color: var(--primary-color);
         }
 
-        /* Hero Header con imagen personalizable */
+        /* ---------- CADA APARTADO A PANTALLA COMPLETA ---------- */
+        header, section, footer {
+            min-height: 100vh;
+            min-height: 100dvh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px 40px;
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Header con imagen de fondo */
         header {
-            padding: 120px 20px 90px;
-            /* RUTA DE IMAGEN DE CABECERA PERSONALIZABLE: images/cabecera-bg.jpg */
-            background: linear-gradient(rgba(252, 251, 250, 0.82), rgba(252, 251, 250, 0.82)), 
+            background: linear-gradient(rgba(252, 251, 250, 0.85), rgba(252, 251, 250, 0.85)), 
                         url('images/cabecera-bg.jpg') center/cover no-repeat;
-            border-bottom: 1px solid var(--border-color);
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: var(--primary-color);
@@ -186,108 +224,93 @@
         }
 
         h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: 400;
             color: var(--text-dark);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            line-height: 1.1;
         }
 
         .event-date {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
             color: var(--text-muted);
         }
 
-        /* Secciones principales */
-        section {
-            padding: 70px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        section:nth-child(even) {
-            background-color: rgba(245, 242, 237, 0.5);
-            border-radius: 12px;
-        }
-
         .section-title {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 400;
             color: var(--primary-color);
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             position: relative;
         }
 
         .section-title::after {
             content: '';
             display: block;
-            width: 50px;
+            width: 40px;
             height: 1px;
             background: var(--accent-color);
-            margin: 15px auto 0;
+            margin: 10px auto 0;
         }
 
-        /* Imágenes descriptivas de sección */
         .section-img {
             width: 100%;
-            max-height: 380px;
+            max-height: 200px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
-        /* Tarjetas de Información */
+        /* Tarjetas adaptadas al espacio de pantalla móvil */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 35px 25px;
-            border-radius: 8px;
+            padding: 20px 18px;
+            border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            margin-top: 25px;
+            width: 100%;
+            max-width: 500px;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
         }
 
         .card h3 {
-            font-size: 2rem;
+            font-size: 1.6rem;
             color: var(--text-dark);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .card .time {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--primary-color);
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .card p {
             color: var(--text-muted);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
         }
 
-        /* Botones */
         .btn {
             display: inline-block;
             background-color: var(--primary-color);
             color: #ffffff;
-            padding: 12px 28px;
+            padding: 10px 22px;
             text-decoration: none;
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            background-color: #5d6a58;
-            transform: translateY(-2px);
+            margin: 4px;
         }
 
         .btn-outline {
@@ -296,148 +319,120 @@
             border: 1px solid var(--primary-color);
         }
 
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: #ffffff;
-        }
-
-        /* Código promocional de hotel */
         .promo-code {
             display: inline-block;
             background: #f0eae1;
-            padding: 6px 16px;
+            padding: 6px 14px;
             border-radius: 4px;
             font-weight: 600;
             letter-spacing: 1px;
             color: var(--text-dark);
-            margin: 10px 0;
+            margin: 8px 0;
+            font-size: 0.85rem;
         }
 
-        /* ---------- ESTILOS PREGUNTAS FRECUENTES (FAQ DESPLEGABLES) ---------- */
+        /* FAQ Desplegables ajustados */
         .faq-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
             text-align: left;
+            padding-right: 5px;
         }
 
         .faq-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 18px 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
-        }
-
-        .faq-item[open] {
-            border-color: var(--primary-color);
-            box-shadow: 0 6px 20px rgba(123, 138, 117, 0.12);
+            padding: 12px 16px;
         }
 
         .faq-question {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-dark);
             cursor: pointer;
-            list-style: none; /* Elimina la flecha nativa */
+            list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            user-select: none;
         }
 
         .faq-question::-webkit-details-marker {
-            display: none; /* Oculta flecha nativa en Chrome/Safari */
+            display: none;
         }
 
         .faq-question::after {
             content: '+';
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 300;
+            font-size: 1.2rem;
             color: var(--primary-color);
-            transition: transform 0.3s ease;
-            margin-left: 15px;
-            line-height: 1;
+            margin-left: 10px;
         }
 
         .faq-item[open] .faq-question::after {
             content: '−';
-            transform: rotate(180deg);
         }
 
         .faq-answer {
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid rgba(229, 224, 216, 0.6);
             color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
-        /* Formulario RSVP */
+        /* Formularios */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             text-align: left;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
         .form-group input, 
         .form-group select, 
         .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-family: inherit;
             background-color: #fff;
+            font-size: 0.85rem;
         }
 
-        /* Zona de carga de fotos */
         .upload-box {
             border: 2px dashed var(--primary-color);
-            padding: 40px 20px;
+            padding: 25px 15px;
             border-radius: 8px;
             background: #faf8f5;
             cursor: pointer;
-            transition: background 0.3s;
         }
 
-        .upload-box:hover {
-            background: #f2ede4;
-        }
-
-        /* Footer */
         footer {
-            padding: 40px 20px;
+            min-height: 50vh; /* El footer no necesita toda la pantalla */
             background-color: #f2ede4;
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 60px;
-        }
-
-        footer a {
-            color: var(--primary-color);
-            text-decoration: none;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body class="no-scroll">
 
-    <!-- ======================================================= -->
-    <!-- 1) OVERLAY DEL SOBRE                                    -->
-    <!-- ======================================================= -->
+    <!-- OVERLAY DEL SOBRE -->
     <div id="envelope-overlay">
-        <!-- RUTA DE IMAGEN Y VIDEO EN REPOSITORIO GITHUB -->
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline style="display:none;"></video>
 
@@ -445,9 +440,7 @@
         <button id="skip-btn">Saltar ▶</button>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- 2) CONTENIDO DE LA INVITACIÓN                           -->
-    <!-- ======================================================= -->
+    <!-- CONTENIDO DE LA INVITACIÓN -->
     <div id="main-content">
         <!-- Menú de navegación -->
         <nav>
@@ -462,7 +455,7 @@
         </nav>
 
         <!-- Header / Presentación -->
-        <header>
+        <header id="hero">
             <p class="subtitle">¡Nos vamos a casar!</p>
             <h1>Juan & Jara</h1>
             <p class="event-date">14 de abril de 2028</p>
@@ -472,7 +465,6 @@
         <section id="details">
             <h2 class="section-title">El Gran Día</h2>
             <div class="card">
-                <!-- IMAGEN OPCIONAL DEL LUGAR -->
                 <img src="images/ceremonia.jpg" alt="Lugar de la ceremonia" class="section-img" onerror="this.style.display='none';">
                 
                 <h3>Ceremonia Civil en Mas Les Lloses</h3>
@@ -489,7 +481,6 @@
         <section id="accommodation">
             <h2 class="section-title">Viajes & Estancias</h2>
             <div class="card">
-                <!-- IMAGEN OPCIONAL DEL HOTEL -->
                 <img src="images/alojamiento.jpg" alt="Hotel Barceló" class="section-img" onerror="this.style.display='none';">
                 
                 <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones bloqueadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
@@ -503,7 +494,6 @@
         <section id="dresscode">
             <h2 class="section-title">Código de Vestimenta</h2>
             <div class="card">
-                <!-- IMAGEN OPCIONAL DE DRESSCODE -->
                 <img src="images/dresscode.jpg" alt="Código de vestimenta" class="section-img" onerror="this.style.display='none';">
                 
                 <p>¡Vuestra presencia es lo más importante para nosotros!</p>
@@ -511,44 +501,37 @@
             </div>
         </section>
 
-        <!-- Sección 4: Preguntas Frecuentes (FAQ Desplegables) -->
+        <!-- Sección 4: Preguntas Frecuentes -->
         <section id="faq">
             <h2 class="section-title">Preguntas Frecuentes</h2>
-            <p style="color: var(--text-muted);">Aquí resolvemos las dudas más habituales sobre nuestro gran día.</p>
+            <p style="color: var(--text-muted); margin-bottom: 10px; font-size: 0.85rem;">Dudas habituales sobre nuestro gran día.</p>
             
             <div class="faq-container">
                 <details class="faq-item">
-                    <summary class="faq-question">Lorem ipsum dolor sit amet, consectetur adipiscing elit?</summary>
+                    <summary class="faq-question">Lorem ipsum dolor sit amet?</summary>
                     <div class="faq-answer">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                     </div>
                 </details>
 
                 <details class="faq-item">
-                    <summary class="faq-question">Duis aute irure dolor in reprehenderit in voluptate velit esse?</summary>
+                    <summary class="faq-question">Duis aute irure dolor in reprehenderit?</summary>
                     <div class="faq-answer">
-                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
                     </div>
                 </details>
 
                 <details class="faq-item">
-                    <summary class="faq-question">Curabitur pretium tincidunt lacus. Nulla gravida orci a odio?</summary>
+                    <summary class="faq-question">Curabitur pretium tincidunt lacus?</summary>
                     <div class="faq-answer">
-                        <p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
+                        <p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra.</p>
                     </div>
                 </details>
 
                 <details class="faq-item">
-                    <summary class="faq-question">Pellentesque habitant morbi tristique senectus et netus et malesuada?</summary>
+                    <summary class="faq-question">Pellentesque habitant morbi tristique?</summary>
                     <div class="faq-answer">
-                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris ut ultrices justo. Phasellus hendrerit eleifend sem, sed sollicitudin odio rhoncus ac.</p>
-                    </div>
-                </details>
-
-                <details class="faq-item">
-                    <summary class="faq-question">Fusce aliquet pede non pede. Suspendisse potenti?</summary>
-                    <div class="faq-answer">
-                        <p>Fusce aliquet pede non pede. Suspendisse potenti. Cras id magna. Ut id nisl quis enim dignissim sagittis. Etiam sollicitudin, ipsum eu pulvinar rutrum, tellus tellus laoreet justo, id ultrices risus justo eu risus.</p>
+                        <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
                     </div>
                 </details>
             </div>
@@ -557,7 +540,7 @@
         <!-- Sección 5: RSVP -->
         <section id="rsvp">
             <h2 class="section-title">Confirma tu Asistencia</h2>
-            <p>Estamos deseando verte. Por favor, asegúrate de confirmarnos tu asistencia antes del <strong>10 de Julio</strong>.</p>
+            <p style="margin-bottom: 10px; font-size: 0.85rem;">Confírmanos antes del <strong>10 de Julio</strong>.</p>
             
             <form class="card" onsubmit="event.preventDefault(); alert('¡Gracias por confirmar tu asistencia!');">
                 <div class="form-group">
@@ -571,13 +554,13 @@
                         <option value="">Selecciona una opción</option>
                         <option value="yes">¡Sí, ahí estaré!</option>
                         <option value="no">Lo siento, no podré asistir</option>
-                        <option value="maybe">Aún no estoy seguro/a, te avisaré más adelante</option>
+                        <option value="maybe">Aún no estoy seguro/a</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="diet">¿Tienes alguna restricción dietética? (Vegetariana, pescatariana, alergias, etc.):</label>
-                    <textarea id="diet" rows="3" placeholder="Indica aquí si tienes alergias o necesidades especiales"></textarea>
+                    <label for="diet">Restricciones dietéticas:</label>
+                    <textarea id="diet" rows="2" placeholder="Alergias, vegetariano, etc."></textarea>
                 </div>
 
                 <button type="submit" class="btn">Enviar Confirmación</button>
@@ -587,13 +570,12 @@
         <!-- Sección 6: Subir Fotos -->
         <section id="upload">
             <h2 class="section-title">Subir una Foto</h2>
-            <p>¡Hagamos felices a los novios! Llena el álbum de fotos durante el día de la boda o después.</p>
-            <p>Utiliza nuestro hashtag en redes sociales: <strong>#AllYouNeedIsLove</strong></p>
+            <p style="margin-bottom: 10px; font-size: 0.85rem;">Hashtag: <strong>#AllYouNeedIsLove</strong></p>
             
             <div class="card">
                 <div class="upload-box" onclick="document.getElementById('fileInput').click();">
-                    <p>📷 <strong>Suelta tus fotos aquí, o haz clic para seleccionar archivos.</strong></p>
-                    <p><small>El límite es de 30 fotos por envío (máximo 20MB por foto).</small></p>
+                    <p>📷 <strong>Toca aquí para subir tus fotos</strong></p>
+                    <p><small>Máximo 30 fotos (20MB por foto)</small></p>
                     <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
                 </div>
             </div>
@@ -606,9 +588,7 @@
         </footer>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- 3) LÓGICA DE INTERACCIÓN (JAVASCRIPT)                   -->
-    <!-- ======================================================= -->
+    <!-- JAVASCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('envelope-overlay');
@@ -620,28 +600,18 @@
 
             let isOpening = false;
 
-            // Función para difuminar el sobre y mostrar la invitación
             function openInvitation() {
-                // Difuminar overlay
                 overlay.classList.add('hidden');
-                
-                // Reactivar el scroll en la página
                 document.body.classList.remove('no-scroll');
-
-                // Revelar suavemente el contenido de la invitación
                 mainContent.classList.add('show');
             }
 
-            // Iniciar la reproducción del vídeo
             function startOpening() {
                 if (isOpening) return;
                 isOpening = true;
 
-                // Ocultar imagen estática y texto de aviso
                 envelopeImg.style.display = 'none';
                 tapHint.style.display = 'none';
-
-                // Mostrar y reproducir el vídeo
                 envelopeVid.style.display = 'block';
                 
                 const playPromise = envelopeVid.play();
@@ -653,13 +623,9 @@
                 }
             }
 
-            // Eventos de clic/tap en la imagen del sobre
             envelopeImg.addEventListener('click', startOpening);
-
-            // Al finalizar el vídeo, difuminar sobre y mostrar web
             envelopeVid.addEventListener('ended', openInvitation);
 
-            // Botón de saltar
             skipBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 envelopeVid.pause();
