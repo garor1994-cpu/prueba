@@ -45,11 +45,6 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
-        /* --- FIX 1: usar altura dinámica real del viewport (dvh) con fallback a vh ---
-           En Chrome móvil, 100vh incluye el espacio que ocupa la barra de
-           direcciones cuando está visible, por lo que el botón "Saltar"
-           (bottom:24px) podía quedar fuera del área realmente visible/tocable.
-        */
         #envelope-overlay {
             position: fixed;
             top: 0;
@@ -77,7 +72,7 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
-            pointer-events: none; /* el toque lo gestiona el overlay completo */
+            pointer-events: none;
         }
 
         #envelope-image {
@@ -85,7 +80,6 @@
             display: block;
         }
 
-        /* --- FIX 2: el overlay entero es el área táctil para abrir el sobre --- */
         #envelope-tap-area {
             position: absolute;
             inset: 0;
@@ -352,7 +346,48 @@
         #details .card {
             background: rgba(255, 255, 255, 0.55);
             backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        /* --- ESTILOS DE LA CUENTA ATRÁS --- */
+        #countdown {
+            background: var(--bg-color);
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0 10px;
+            width: 100%;
+        }
+
+        .countdown-box {
+            background: rgba(252, 251, 250, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countdown-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 500;
         }
 
         .section-title {
@@ -557,8 +592,6 @@
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline muted style="display:none;"></video>
 
-        <!-- FIX: capa táctil única que cubre todo el sobre, evita que el toque
-             se pierda si la imagen falla en cargar o queda mal dimensionada -->
         <div id="envelope-tap-area" role="button" aria-label="Abrir invitación"></div>
 
         <div id="tap-hint">Toca el sobre para abrirlo</div>
@@ -570,6 +603,7 @@
             <ul>
                 <li><a href="#hero">Inicio</a></li>
                 <li><a href="#details">El gran día</a></li>
+                <li><a href="#countdown">Cuenta atrás</a></li>
                 <li><a href="#accommodation">Viajes & Estancias</a></li>
                 <li><a href="#dresscode">Código de vestimenta</a></li>
                 <li><a href="#faq">Preguntas frecuentes</a></li>
@@ -607,6 +641,34 @@
                 
                 <a href="https://www.google.com/maps/search/?api=1&query=@39.6503879,-0.2945253,19z&query_place_id=ChIJ-xMWO_4_YA0RJTTFI9jmkfQ" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver en Google Maps</a>
                 <a href="#rsvp" class="btn">Confirma tu asistencia</a>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE CUENTA ATRÁS -->
+        <section id="countdown">
+            <h2 class="section-title">Cuenta Atrás</h2>
+            <div class="card">
+                <h3>¡Ya falta menos!</h3>
+                <p>Estamos contando cada segundo para celebrar con vosotros.</p>
+                
+                <div class="countdown-grid">
+                    <div class="countdown-box">
+                        <span class="countdown-num" id="cd-days">00</span>
+                        <span class="countdown-label">Días</span>
+                    </div>
+                    <div class="countdown-box">
+                        <span class="countdown-num" id="cd-hours">00</span>
+                        <span class="countdown-label">Horas</span>
+                    </div>
+                    <div class="countdown-box">
+                        <span class="countdown-num" id="cd-minutes">00</span>
+                        <span class="countdown-label">Min</span>
+                    </div>
+                    <div class="countdown-box">
+                        <span class="countdown-num" id="cd-seconds">00</span>
+                        <span class="countdown-label">Seg</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -731,9 +793,6 @@
 
             const headerVid = document.querySelector('.header-video-bg');
 
-            // --- FIX: helper para registrar un tap/click de forma robusta en
-            // móvil (evita el problema de "ghost click" y añade touchend
-            // como respaldo por si algún Chrome Android no dispara click) ---
             function addTapListener(el, handler) {
                 if (!el) return;
                 let touched = false;
@@ -744,7 +803,7 @@
                     setTimeout(() => { touched = false; }, 500);
                 }, { passive: false });
                 el.addEventListener('click', (e) => {
-                    if (touched) return; // evita doble disparo touchend + click
+                    if (touched) return;
                     handler(e);
                 });
             }
@@ -810,7 +869,6 @@
                 if (tapArea) tapArea.style.display = 'none';
                 envelopeVid.style.display = 'block';
 
-                // Si el vídeo no está disponible/no carga, no bloqueamos al usuario
                 envelopeVid.addEventListener('error', () => {
                     console.log("No se pudo cargar el vídeo de apertura, mostrando la invitación directamente.");
                     openInvitation();
@@ -825,7 +883,6 @@
                 }
             }
 
-            // Toque en cualquier parte del sobre (imagen o capa táctil) lo abre
             addTapListener(envelopeImg, startOpening);
             addTapListener(tapArea, startOpening);
 
@@ -837,8 +894,6 @@
                 openInvitation();
             });
 
-            // Salvaguarda: si por lo que sea nada responde en 8s tras cargar
-            // (recursos rotos, etc.), no dejamos al usuario atrapado.
             setTimeout(() => {
                 if (!overlay.classList.contains('hidden') && !isOpening) {
                     console.log('Comprobación de seguridad: el overlay sigue activo, los controles deberían estar operativos.');
@@ -854,6 +909,35 @@
                     }
                 });
             }
+
+            // --- LÓGICA DE LA CUENTA ATRÁS ---
+            const eventDate = new Date('2028-04-14T12:00:00').getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const diff = eventDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById('cd-days').textContent = '00';
+                    document.getElementById('cd-hours').textContent = '00';
+                    document.getElementById('cd-minutes').textContent = '00';
+                    document.getElementById('cd-seconds').textContent = '00';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+                document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         });
     </script>
 
