@@ -28,12 +28,13 @@
         }
 
         html, body {
-            min-height: 100%;
+            height: 100%;
             background-color: var(--bg-color);
             color: var(--text-dark);
             font-family: 'Montserrat', sans-serif;
             line-height: 1.6;
             text-align: center;
+            overflow: hidden;
         }
 
         body.no-scroll {
@@ -118,14 +119,58 @@
             50% { opacity: 1; transform: scale(1); } 
         }
 
+        /* ---------- BOTÓN DE MÚSICA FLOTANTE ---------- */
+        #music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 2000;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backdrop-filter: blur(6px);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        #music-control:hover {
+            transform: scale(1.08);
+            background: #ffffff;
+        }
+
         /* ---------- CONTENEDOR PRINCIPAL ---------- */
         #main-content {
-            height: auto;
-            overflow-y: visible;
+            height: 100vh;
+            height: 100dvh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 1.2s ease, transform 1.2s ease;
+
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 8%,
+                black 92%,
+                transparent 100%
+            );
+            mask-image: linear-gradient(
+                to bottom,
+                transparent 0%,
+                black 8%,
+                black 92%,
+                transparent 100%
+            );
         }
 
         #main-content.show {
@@ -174,10 +219,12 @@
             color: var(--primary-color);
         }
 
-        /* ---------- SECCIONES ---------- */
+        /* ---------- SECCIONES PANTALLA COMPLETA ---------- */
         header, section, footer {
             min-height: 100vh;
             min-height: 100dvh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -186,6 +233,7 @@
             max-width: 100%;
             margin: 0 auto;
             position: relative;
+            overflow: hidden;
         }
 
         /* ---------- 1. HEADER CON VÍDEO DE FONDO ---------- */
@@ -210,7 +258,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(252, 251, 250, 0.75); /* Capa translúcida sobre el vídeo para legibilidad */
+            background: rgba(252, 251, 250, 0.75);
             z-index: 2;
         }
 
@@ -288,8 +336,8 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             width: 100%;
             max-width: 500px;
-            max-height: none;
-            overflow-y: visible;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
             position: relative;
             z-index: 2;
         }
@@ -355,8 +403,8 @@
             gap: 10px;
             width: 100%;
             max-width: 500px;
-            max-height: none;
-            overflow-y: visible;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
             text-align: left;
             padding-right: 5px;
         }
@@ -448,10 +496,19 @@
 </head>
 <body class="no-scroll">
 
+    <!-- AUDIO DE FONDO -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- BOTÓN DE MÚSICA -->
+    <button id="music-control" aria-label="Silenciar / Activar música" title="Música">🔊</button>
+
     <!-- OVERLAY DEL SOBRE -->
     <div id="envelope-overlay">
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
-        <video id="envelope-video" src="apertura-sobre.mp4" playsinline style="display:none;"></video>
+        <!-- Vídeo con atributo muted -->
+        <video id="envelope-video" src="apertura-sobre.mp4" playsinline muted style="display:none;"></video>
 
         <div id="tap-hint">Toca el sobre para abrirlo</div>
         <button id="skip-btn">Saltar ▶</button>
@@ -474,7 +531,7 @@
 
         <!-- Header / Presentación con Vídeo de Fondo -->
         <header id="hero">
-            <video class="header-video-bg" autoplay loop muted playsinline>
+            <video class="header-video-bg" autoplay loop muted playsinline poster="images/cabecera-bg.jpg">
                 <source src="video-cabecera.mp4" type="video/mp4">
             </video>
             <div class="header-overlay"></div>
@@ -619,18 +676,47 @@
             const tapHint = document.getElementById('tap-hint');
             const skipBtn = document.getElementById('skip-btn');
             const mainContent = document.getElementById('main-content');
+            
+            // Elementos de Audio
+            const bgMusic = document.getElementById('bg-music');
+            const musicBtn = document.getElementById('music-control');
 
             let isOpening = false;
+
+            function playAudio() {
+                if (bgMusic.paused) {
+                    bgMusic.play().then(() => {
+                        musicBtn.textContent = '🔊';
+                    }).catch(error => {
+                        console.log("Error al reproducir audio:", error);
+                    });
+                }
+            }
+
+            function toggleAudio() {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                    musicBtn.textContent = '🔊';
+                } else {
+                    bgMusic.pause();
+                    musicBtn.textContent = '🔇';
+                }
+            }
+
+            musicBtn.addEventListener('click', toggleAudio);
 
             function openInvitation() {
                 overlay.classList.add('hidden');
                 document.body.classList.remove('no-scroll');
                 mainContent.classList.add('show');
+                playAudio();
             }
 
             function startOpening() {
                 if (isOpening) return;
                 isOpening = true;
+
+                playAudio(); // Inicia la música tras la interacción inicial del usuario
 
                 envelopeImg.style.display = 'none';
                 tapHint.style.display = 'none';
