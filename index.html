@@ -115,7 +115,9 @@
 
         #tap-hint {
             position: absolute;
-            bottom: 40px;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
             color: #fff;
             font-family: 'Montserrat', sans-serif;
             font-size: 14px;
@@ -127,11 +129,12 @@
             animation: pulse 1.6s infinite;
             pointer-events: none;
             z-index: 6;
+            white-space: nowrap;
         }
 
         @keyframes pulse { 
-            0%, 100% { opacity: .4; transform: scale(0.98); } 
-            50% { opacity: 1; transform: scale(1); } 
+            0%, 100% { opacity: .4; transform: translateX(-50%) scale(0.98); } 
+            50% { opacity: 1; transform: translateX(-50%) scale(1); } 
         }
 
         /* --- BOTÓN DE MÚSICA ADAPTATIVO --- */
@@ -1021,22 +1024,24 @@
             let isOpening = false;
 
             function playAudio() {
-                if (bgMusic && bgMusic.paused) {
-                    bgMusic.play().then(() => {
-                        if (musicIcon) musicIcon.textContent = '🔊';
-                        if (musicText) musicText.textContent = 'Silenciar música';
-                    }).catch(error => {
-                        console.log("Error al reproducir audio:", error);
-                    });
+                if (bgMusic) {
+                    bgMusic.muted = false;
+                    const playPromise = bgMusic.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            if (musicIcon) musicIcon.textContent = '🔊';
+                            if (musicText) musicText.textContent = 'Silenciar música';
+                        }).catch(error => {
+                            console.log("Error al reproducir audio:", error);
+                        });
+                    }
                 }
             }
 
             function toggleAudio() {
                 if (!bgMusic) return;
                 if (bgMusic.paused) {
-                    bgMusic.play();
-                    if (musicIcon) musicIcon.textContent = '🔊';
-                    if (musicText) musicText.textContent = 'Silenciar música';
+                    playAudio();
                 } else {
                     bgMusic.pause();
                     if (musicIcon) musicIcon.textContent = '🔇';
