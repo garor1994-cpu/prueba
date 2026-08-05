@@ -765,7 +765,8 @@
 
     <div id="envelope-overlay">
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
-        <video id="envelope-video" src="apertura-sobre.mp4" playsinline muted style="display:none;"></video>
+        <!-- AÑADIDOS ATRIBUTOS playsinline Y webkit-playsinline PARA MÓVILES -->
+        <video id="envelope-video" src="apertura-sobre.mp4" playsinline webkit-playsinline muted preload="auto" style="display:none;"></video>
 
         <div id="envelope-tap-area" role="button" aria-label="Abrir invitación"></div>
 
@@ -775,7 +776,7 @@
 
     <div id="main-content">
         <header id="hero">
-            <video class="header-video-bg" autoplay loop muted playsinline preload="auto" poster="images/cabecera-bg.jpg">
+            <video class="header-video-bg" autoplay loop muted playsinline webkit-playsinline preload="auto" poster="images/cabecera-bg.jpg">
                 <source src="video-cabecera.mp4" type="video/mp4">
                 <source src="video-cabecera.webm" type="video/webm">
             </video>
@@ -1023,6 +1024,7 @@
 
             let isOpening = false;
 
+            // --- REPRODUCCIÓN FORZADA DE MÚSICA EN MÓVILES ---
             function playAudio() {
                 if (bgMusic) {
                     bgMusic.muted = false;
@@ -1065,6 +1067,7 @@
                 if (isOpening) return;
                 isOpening = true;
 
+                // 1. REPRODUCIR AUDIO INMEDIATAMENTE TRAS LA PULSACIÓN TÁCTIL
                 playAudio();
 
                 if (envelopeImg) envelopeImg.style.display = 'none';
@@ -1078,9 +1081,13 @@
                         openInvitation();
                     }, { once: true });
 
+                    // Garantizar que el vídeo no roba el silencio
+                    envelopeVid.muted = true;
+                    
                     const playPromise = envelopeVid.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(error => {
+                            console.log("Error vídeo apertura:", error);
                             openInvitation();
                         });
                     }
@@ -1109,7 +1116,6 @@
                 mainContent.addEventListener('scroll', () => {
                     const scrollPos = mainContent.scrollTop;
 
-                    // 1. Ocultar Menú fuera de la primera sección
                     if (menuContainer) {
                         if (scrollPos > 120) {
                             menuContainer.classList.add('hidden');
@@ -1120,7 +1126,6 @@
                         }
                     }
 
-                    // 2. Contraer Botón de Música
                     if (musicBtn) {
                         if (scrollPos > 40) {
                             musicBtn.classList.add('scrolled');
@@ -1129,7 +1134,6 @@
                         }
                     }
 
-                    // 3. Indicador de scroll
                     if (scrollIndicator) {
                         if (scrollPos > 40) {
                             scrollIndicator.classList.add('fade-out');
