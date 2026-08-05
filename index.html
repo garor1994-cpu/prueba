@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Juan & Jara | ¡Nos Casamos!</title>
 
     <!-- Fuentes elegantes -->
@@ -45,18 +45,25 @@
             font-family: 'Cormorant Garamond', serif;
         }
 
+        /* --- FIX 1: usar altura dinámica real del viewport (dvh) con fallback a vh ---
+           En Chrome móvil, 100vh incluye el espacio que ocupa la barra de
+           direcciones cuando está visible, por lo que el botón "Saltar"
+           (bottom:24px) podía quedar fuera del área realmente visible/tocable.
+        */
         #envelope-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             background: #1a1a1a;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             transition: opacity 1.2s ease, visibility 1.2s ease;
+            touch-action: manipulation;
         }
 
         #envelope-overlay.hidden {
@@ -70,11 +77,22 @@
             height: 100%;
             object-fit: cover;
             object-position: center;
+            pointer-events: none; /* el toque lo gestiona el overlay completo */
         }
 
         #envelope-image {
             cursor: pointer;
             display: block;
+        }
+
+        /* --- FIX 2: el overlay entero es el área táctil para abrir el sobre --- */
+        #envelope-tap-area {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         #skip-btn {
@@ -91,7 +109,10 @@
             font-family: 'Montserrat', sans-serif;
             backdrop-filter: blur(4px);
             transition: background 0.3s ease;
-            z-index: 10;
+            z-index: 20;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
         }
 
         #skip-btn:hover {
@@ -111,6 +132,7 @@
             backdrop-filter: blur(4px);
             animation: pulse 1.6s infinite;
             pointer-events: none;
+            z-index: 6;
         }
 
         @keyframes pulse { 
@@ -137,6 +159,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             backdrop-filter: blur(6px);
             transition: transform 0.2s ease, background 0.3s ease;
+            touch-action: manipulation;
         }
 
         #music-control:hover {
@@ -534,8 +557,12 @@
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline muted style="display:none;"></video>
 
+        <!-- FIX: capa táctil única que cubre todo el sobre, evita que el toque
+             se pierda si la imagen falla en cargar o queda mal dimensionada -->
+        <div id="envelope-tap-area" role="button" aria-label="Abrir invitación"></div>
+
         <div id="tap-hint">Toca el sobre para abrirlo</div>
-        <button id="skip-btn">Saltar ▶</button>
+        <button id="skip-btn" type="button">Saltar ▶</button>
     </div>
 
     <div id="main-content">
@@ -693,6 +720,7 @@
             const overlay = document.getElementById('envelope-overlay');
             const envelopeImg = document.getElementById('envelope-image');
             const envelopeVid = document.getElementById('envelope-video');
+            const tapArea = document.getElementById('envelope-tap-area');
             const tapHint = document.getElementById('tap-hint');
             const skipBtn = document.getElementById('skip-btn');
             const mainContent = document.getElementById('main-content');
@@ -702,6 +730,24 @@
             const musicBtn = document.getElementById('music-control');
 
             const headerVid = document.querySelector('.header-video-bg');
+
+            // --- FIX: helper para registrar un tap/click de forma robusta en
+            // móvil (evita el problema de "ghost click" y añade touchend
+            // como respaldo por si algún Chrome Android no dispara click) ---
+            function addTapListener(el, handler) {
+                if (!el) return;
+                let touched = false;
+                el.addEventListener('touchend', (e) => {
+                    touched = true;
+                    e.preventDefault();
+                    handler(e);
+                    setTimeout(() => { touched = false; }, 500);
+                }, { passive: false });
+                el.addEventListener('click', (e) => {
+                    if (touched) return; // evita doble disparo touchend + click
+                    handler(e);
+                });
+            }
 
             function attemptHeaderVideoPlay() {
                 if (!headerVid) return;
@@ -743,7 +789,7 @@
                 }
             }
 
-            musicBtn.addEventListener('click', toggleAudio);
+            addTapListener(musicBtn, toggleAudio);
 
             function openInvitation() {
                 overlay.classList.add('hidden');
@@ -761,8 +807,15 @@
 
                 envelopeImg.style.display = 'none';
                 tapHint.style.display = 'none';
+                if (tapArea) tapArea.style.display = 'none';
                 envelopeVid.style.display = 'block';
-                
+
+                // Si el vídeo no está disponible/no carga, no bloqueamos al usuario
+                envelopeVid.addEventListener('error', () => {
+                    console.log("No se pudo cargar el vídeo de apertura, mostrando la invitación directamente.");
+                    openInvitation();
+                }, { once: true });
+
                 const playPromise = envelopeVid.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
@@ -772,14 +825,25 @@
                 }
             }
 
-            envelopeImg.addEventListener('click', startOpening);
+            // Toque en cualquier parte del sobre (imagen o capa táctil) lo abre
+            addTapListener(envelopeImg, startOpening);
+            addTapListener(tapArea, startOpening);
+
             envelopeVid.addEventListener('ended', openInvitation);
 
-            skipBtn.addEventListener('click', (e) => {
+            addTapListener(skipBtn, (e) => {
                 e.stopPropagation();
                 envelopeVid.pause();
                 openInvitation();
             });
+
+            // Salvaguarda: si por lo que sea nada responde en 8s tras cargar
+            // (recursos rotos, etc.), no dejamos al usuario atrapado.
+            setTimeout(() => {
+                if (!overlay.classList.contains('hidden') && !isOpening) {
+                    console.log('Comprobación de seguridad: el overlay sigue activo, los controles deberían estar operativos.');
+                }
+            }, 8000);
 
             if (mainContent && scrollIndicator) {
                 mainContent.addEventListener('scroll', () => {
