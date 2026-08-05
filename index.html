@@ -177,7 +177,6 @@
             overflow: hidden;
         }
 
-        /* Estado contraído al scrollear */
         #music-control.scrolled {
             padding: 0;
             width: 44px;
@@ -238,7 +237,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Transformación a cruz al abrir */
         #menu-toggle.active .bar:nth-child(1) {
             transform: translateY(7px) rotate(45deg);
         }
@@ -805,7 +803,6 @@
             </div>
         </section>
 
-        <!-- SECCIÓN DE CUENTA ATRÁS -->
         <section id="countdown">
             <img src="images/decoracion-arriba.png" alt="Detalle decorativo" class="countdown-decor-img" onerror="this.style.display='none';">
 
@@ -981,27 +978,27 @@
             }
 
             // --- LÓGICA DEL MENÚ DESPLEGABLE ---
-            addTapListener(menuToggle, (e) => {
-                e.stopPropagation();
-                menuToggle.classList.toggle('active');
-                dropdownMenu.classList.toggle('active');
-            });
-
-            // Cierra el menú al hacer clic en un enlace
-            dropdownMenu.querySelectorAll('a').forEach(link => {
-                addTapListener(link, () => {
-                    menuToggle.classList.remove('active');
-                    dropdownMenu.classList.remove('active');
+            if (menuToggle && dropdownMenu) {
+                addTapListener(menuToggle, (e) => {
+                    e.stopPropagation();
+                    menuToggle.classList.toggle('active');
+                    dropdownMenu.classList.toggle('active');
                 });
-            });
 
-            // Cierra el menú al hacer clic fuera
-            document.addEventListener('click', (e) => {
-                if (menuContainer && !menuContainer.contains(e.target)) {
-                    menuToggle.classList.remove('active');
-                    dropdownMenu.classList.remove('active');
-                }
-            });
+                dropdownMenu.querySelectorAll('a').forEach(link => {
+                    addTapListener(link, () => {
+                        menuToggle.classList.remove('active');
+                        dropdownMenu.classList.remove('active');
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (menuContainer && !menuContainer.contains(e.target)) {
+                        menuToggle.classList.remove('active');
+                        dropdownMenu.classList.remove('active');
+                    }
+                });
+            }
 
             function attemptHeaderVideoPlay() {
                 if (!headerVid) return;
@@ -1024,10 +1021,10 @@
             let isOpening = false;
 
             function playAudio() {
-                if (bgMusic.paused) {
+                if (bgMusic && bgMusic.paused) {
                     bgMusic.play().then(() => {
-                        musicIcon.textContent = '🔊';
-                        musicText.textContent = 'Silenciar música';
+                        if (musicIcon) musicIcon.textContent = '🔊';
+                        if (musicText) musicText.textContent = 'Silenciar música';
                     }).catch(error => {
                         console.log("Error al reproducir audio:", error);
                     });
@@ -1035,23 +1032,26 @@
             }
 
             function toggleAudio() {
+                if (!bgMusic) return;
                 if (bgMusic.paused) {
                     bgMusic.play();
-                    musicIcon.textContent = '🔊';
-                    musicText.textContent = 'Silenciar música';
+                    if (musicIcon) musicIcon.textContent = '🔊';
+                    if (musicText) musicText.textContent = 'Silenciar música';
                 } else {
                     bgMusic.pause();
-                    musicIcon.textContent = '🔇';
-                    musicText.textContent = 'Activar música';
+                    if (musicIcon) musicIcon.textContent = '🔇';
+                    if (musicText) musicText.textContent = 'Activar música';
                 }
             }
 
-            addTapListener(musicBtn, toggleAudio);
+            if (musicBtn) {
+                addTapListener(musicBtn, toggleAudio);
+            }
 
             function openInvitation() {
-                overlay.classList.add('hidden');
+                if (overlay) overlay.classList.add('hidden');
                 document.body.classList.remove('no-scroll');
-                mainContent.classList.add('show');
+                if (mainContent) mainContent.classList.add('show');
                 playAudio();
                 attemptHeaderVideoPlay();
             }
@@ -1062,53 +1062,66 @@
 
                 playAudio();
 
-                envelopeImg.style.display = 'none';
-                tapHint.style.display = 'none';
+                if (envelopeImg) envelopeImg.style.display = 'none';
+                if (tapHint) tapHint.style.display = 'none';
                 if (tapArea) tapArea.style.display = 'none';
-                envelopeVid.style.display = 'block';
 
-                envelopeVid.addEventListener('error', () => {
-                    openInvitation();
-                }, { once: true });
+                if (envelopeVid) {
+                    envelopeVid.style.display = 'block';
 
-                const playPromise = envelopeVid.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
+                    envelopeVid.addEventListener('error', () => {
                         openInvitation();
-                    });
+                    }, { once: true });
+
+                    const playPromise = envelopeVid.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            openInvitation();
+                        });
+                    }
+                } else {
+                    openInvitation();
                 }
             }
 
             addTapListener(envelopeImg, startOpening);
-            addTapListener(envelopeTapArea, startOpening);
+            addTapListener(tapArea, startOpening);
 
-            envelopeVid.addEventListener('ended', openInvitation);
+            if (envelopeVid) {
+                envelopeVid.addEventListener('ended', openInvitation);
+            }
 
-            addTapListener(skipBtn, (e) => {
-                e.stopPropagation();
-                envelopeVid.pause();
-                openInvitation();
-            });
+            if (skipBtn) {
+                addTapListener(skipBtn, (e) => {
+                    e.stopPropagation();
+                    if (envelopeVid) envelopeVid.pause();
+                    openInvitation();
+                });
+            }
 
             // --- LÓGICA DE SCROLL (Música, Menú e Indicador) ---
             if (mainContent) {
                 mainContent.addEventListener('scroll', () => {
                     const scrollPos = mainContent.scrollTop;
 
-                    // 1. Mostrar/Ocultar Menú (solo visible en la primera sección)
-                    if (scrollPos > 120) {
-                        menuContainer.classList.add('hidden');
-                        menuToggle.classList.remove('active');
-                        dropdownMenu.classList.remove('active');
-                    } else {
-                        menuContainer.classList.remove('hidden');
+                    // 1. Ocultar Menú fuera de la primera sección
+                    if (menuContainer) {
+                        if (scrollPos > 120) {
+                            menuContainer.classList.add('hidden');
+                            if (menuToggle) menuToggle.classList.remove('active');
+                            if (dropdownMenu) dropdownMenu.classList.remove('active');
+                        } else {
+                            menuContainer.classList.remove('hidden');
+                        }
                     }
 
-                    // 2. Contraer/Expandir Botón de Música
-                    if (scrollPos > 40) {
-                        musicBtn.classList.add('scrolled');
-                    } else {
-                        musicBtn.classList.remove('scrolled');
+                    // 2. Contraer Botón de Música
+                    if (musicBtn) {
+                        if (scrollPos > 40) {
+                            musicBtn.classList.add('scrolled');
+                        } else {
+                            musicBtn.classList.remove('scrolled');
+                        }
                     }
 
                     // 3. Indicador de scroll
@@ -1130,10 +1143,14 @@
                 const diff = eventDate - now;
 
                 if (diff <= 0) {
-                    document.getElementById('cd-days').textContent = '00';
-                    document.getElementById('cd-hours').textContent = '00';
-                    document.getElementById('cd-minutes').textContent = '00';
-                    document.getElementById('cd-seconds').textContent = '00';
+                    const cdDays = document.getElementById('cd-days');
+                    const cdHours = document.getElementById('cd-hours');
+                    const cdMinutes = document.getElementById('cd-minutes');
+                    const cdSeconds = document.getElementById('cd-seconds');
+                    if (cdDays) cdDays.textContent = '00';
+                    if (cdHours) cdHours.textContent = '00';
+                    if (cdMinutes) cdMinutes.textContent = '00';
+                    if (cdSeconds) cdSeconds.textContent = '00';
                     return;
                 }
 
@@ -1142,10 +1159,15 @@
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
-                document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+                const cdDays = document.getElementById('cd-days');
+                const cdHours = document.getElementById('cd-hours');
+                const cdMinutes = document.getElementById('cd-minutes');
+                const cdSeconds = document.getElementById('cd-seconds');
+
+                if (cdDays) cdDays.textContent = String(days).padStart(2, '0');
+                if (cdHours) cdHours.textContent = String(hours).padStart(2, '0');
+                if (cdMinutes) cdMinutes.textContent = String(minutes).padStart(2, '0');
+                if (cdSeconds) cdSeconds.textContent = String(seconds).padStart(2, '0');
             }
 
             updateCountdown();
