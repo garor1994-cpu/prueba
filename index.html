@@ -80,9 +80,15 @@
             display: block;
         }
 
+        /* --- BOTÓN ÁREA TÁCTIL CORREGIDO --- */
         #envelope-tap-area {
             position: absolute;
             inset: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
             z-index: 5;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
@@ -767,7 +773,8 @@
         <img id="envelope-image" src="sobre-cerrado.jpg" alt="Sobre de invitación">
         <video id="envelope-video" src="apertura-sobre.mp4" playsinline webkit-playsinline muted preload="auto" style="display:none;"></video>
 
-        <div id="envelope-tap-area" role="button" aria-label="Abrir invitación"></div>
+        <!-- ÁREA TÁCTIL CONVERTIDA A BUTTON REAL -->
+        <button id="envelope-tap-area" type="button" aria-label="Abrir invitación"></button>
 
         <div id="tap-hint">acaricia al perro para que te de el sobre</div>
         <button id="skip-btn" type="button">Saltar ▶</button>
@@ -965,9 +972,21 @@
 
             const headerVid = document.querySelector('.header-video-bg');
 
+            // --- CAPTURA DE EVENTO TÁCTIL MÓVIL GARANTIZADA ---
             function addTapListener(el, handler) {
                 if (!el) return;
+                let handled = false;
+
+                el.addEventListener('touchstart', (e) => {
+                    handled = true;
+                    handler(e);
+                }, { passive: true });
+
                 el.addEventListener('click', (e) => {
+                    if (handled) {
+                        handled = false;
+                        return;
+                    }
                     handler(e);
                 });
             }
@@ -1057,7 +1076,7 @@
                 if (isOpening) return;
                 isOpening = true;
 
-                // 1. REPRODUCCIÓN SÍNCRONA DE AUDIO AL INSTANTE DE TOCAR
+                // 1. REPRODUCCIÓN INMEDIATA DEL AUDIO EN EL TOUCHSTART NATIVO
                 playAudio();
 
                 if (envelopeImg) envelopeImg.style.display = 'none';
@@ -1065,9 +1084,9 @@
                 if (tapArea) tapArea.style.display = 'none';
 
                 if (envelopeVid) {
-                    // SILENCIADO DE SISTEMA PARA QUE EL MÓVIL NO PAUSE LA MÚSICA
                     envelopeVid.muted = true;
                     envelopeVid.defaultMuted = true;
+                    envelopeVid.playsInline = true;
                     envelopeVid.style.display = 'block';
 
                     envelopeVid.addEventListener('error', () => {
