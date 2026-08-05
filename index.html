@@ -239,7 +239,7 @@
         /* ---------- 1. HEADER CON VÍDEO DE FONDO ---------- */
         header {
             position: relative;
-            background: transparent;
+            background: #000;
         }
 
         .header-video-bg {
@@ -258,7 +258,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(252, 251, 250, 0.75);
+            /* Filtro de difuminado sobre el vídeo y capa translúcida */
+            background: rgba(252, 251, 250, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 2;
         }
 
@@ -273,6 +276,7 @@
             letter-spacing: 3px;
             color: var(--primary-color);
             margin-bottom: 10px;
+            font-weight: 600;
         }
 
         h1 {
@@ -287,7 +291,8 @@
             font-size: 1.3rem;
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            color: var(--text-muted);
+            color: var(--text-dark);
+            font-weight: 600;
         }
 
         /* ---------- 2. SECCIÓN CEREMONIA CON IMAGEN DE FONDO COMPLETA ---------- */
@@ -680,6 +685,12 @@
             // Elementos de Audio
             const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-control');
+
+            // Forzar reproducción del vídeo de la cabecera
+            const headerVid = document.querySelector('.header-video-bg');
+            if (headerVid) {
+                headerVid.play().catch(err => console.log("Autoplay del vídeo de cabecera bloqueado o diferido:", err));
+            }
 
             let isOpening = false;
 
