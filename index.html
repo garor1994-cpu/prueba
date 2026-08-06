@@ -107,7 +107,7 @@
             font-size: 14px;
             cursor: pointer;
             font-family: 'Montserrat', sans-serif;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(2px); /* Blur reducido de 4px a 2px */
             transition: background 0.3s ease;
             z-index: 20;
             touch-action: manipulation;
@@ -131,7 +131,7 @@
             background: rgba(0, 0, 0, 0.4);
             padding: 8px 18px;
             border-radius: 20px;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(2px); /* Blur reducido de 4px a 2px */
             animation: pulse 1.6s infinite;
             pointer-events: none;
             z-index: 6;
@@ -163,7 +163,7 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(3px); /* Blur reducido de 6px a 3px */
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             touch-action: manipulation;
             white-space: nowrap;
@@ -227,7 +227,7 @@
             justify-content: center;
             gap: 5px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px); /* Blur reducido de 12px (original) pero mantenemos un poco de blur */
             transition: transform 0.2s ease, background 0.3s ease;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -263,8 +263,8 @@
             top: 52px;
             right: 0;
             background: rgba(252, 251, 250, 0.96);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(6px); /* Blur reducido de 12px a 6px */
+            -webkit-backdrop-filter: blur(6px); /* Blur reducido de 12px a 6px */
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
@@ -398,8 +398,8 @@
             width: 100%;
             height: 100%;
             background: rgba(252, 251, 250, 0.45);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(3px); /* Blur reducido de 6px a 3px */
+            -webkit-backdrop-filter: blur(3px); /* Blur reducido de 6px a 3px */
             z-index: 2;
         }
 
@@ -475,14 +475,20 @@
 
         #details .card {
             background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(1px); /* Blur reducido de 2px a 1px */
+            -webkit-backdrop-filter: blur(1px); /* Blur reducido de 2px a 1px */
         }
 
         /* --- SECCIÓN CUENTA ATRÁS CON IMAGEN DE FONDO --- */
         #countdown {
             background: linear-gradient(rgba(252, 251, 250, 0.85), rgba(252, 251, 250, 0.85)), 
                         url('images/fondo-cuenta-atras.jpg') center/cover no-repeat;
+        }
+
+        /* --- SECCIÓN ALOJAMIENTO CON IMAGEN DE FONDO --- */
+        #accommodation {
+            background: linear-gradient(rgba(252, 251, 250, 0.85), rgba(252, 251, 250, 0.85)), 
+                        url('images/fondo-alojamiento.jpg') center/cover no-repeat;
         }
 
         .countdown-decor-img {
@@ -850,6 +856,7 @@
         <section id="accommodation">
             <h2 class="section-title">Viajes & Estancias</h2>
             <div class="card">
+                <!-- Foto en la tarjeta (ya existente) -->
                 <img src="images/alojamiento.jpg" alt="Hotel Barceló" class="section-img" onerror="this.style.display='none';">
                 
                 <p>Sabemos que muchos venís desde muy lejos. En caso de que lo necesitéis, tenemos habitaciones bloqueadas en el <strong>Hotel Barceló en Valencia</strong>.</p>
